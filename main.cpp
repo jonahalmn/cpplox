@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include "./src/interpreter.h"
-#include "./src/file.h"
+#include "./src/core/interpreter.h"
+#include "./src/fs/file.h"
 
 int main(int argc, char* argv[]) {
     if ( argc <= 1 ) {

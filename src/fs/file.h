@@ -9,7 +9,7 @@ class File {
         std::ifstream m_file;
 
     public:
-        File(char* filename) : m_file{filename} {
+        File(const char* filename) : m_file{filename} {
 
         }
 
