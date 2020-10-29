@@ -38,6 +38,10 @@ void Scanner::scan_token() {
         case '+': add_token(TokenType::PLUS); break;
         case ';': add_token(TokenType::SEMICOLON); break;
         case '*': add_token(TokenType::STAR); break;
+        case '!': add_token(match('=') ? TokenType::BANG_EQUAL : TokenType::BANG); break;
+        case '=': add_token(match('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL); break;
+        case '<': add_token(match('=') ? TokenType::LESS_EQUAL : TokenType::LESS); break;
+        case '>': add_token(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER); break;
     default:
         m_error_reporter->error(m_line, "Unexpecter character");
         break;
@@ -52,4 +56,12 @@ void Scanner::add_token(TokenType type) {
 char Scanner::advance() {
     m_current++;
     return m_source.at(m_current - 1);
+}
+
+bool Scanner::match(char expected) {
+    if(is_at_end()) return false;
+    if(m_source.at(m_current) != expected) return false;
+
+    m_current++;
+    return true;
 }

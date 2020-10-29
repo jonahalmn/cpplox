@@ -26,6 +26,8 @@ class Scanner {
         char advance();
         void add_token(TokenType type);
         void scan_token();
+        bool match(char c);
+
 };
 
 #endif
