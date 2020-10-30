@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 #include "./token.h"
 #include "./errorReporter.h"
 
@@ -8,6 +9,24 @@
 
 class Scanner {
     private:
+        std::map<const char*, TokenType> keywords = {
+            { "and", TokenType::AND },
+            { "class", TokenType::CLASS },
+            { "else", TokenType::ELSE },
+            { "false", TokenType::FALSE },
+            { "for", TokenType::FOR },
+            { "fun", TokenType::FUN },
+            { "if", TokenType::IF },
+            { "nil", TokenType::NIL },
+            { "or", TokenType::OR },
+            { "print", TokenType::PRINT },
+            { "return", TokenType::RETURN },
+            { "super", TokenType::SUPER },
+            { "this", TokenType::THIS },
+            { "true", TokenType::TRUE },
+            { "var", TokenType::VAR },
+            { "while", TokenType::WHILE },
+        };
         std::string m_source;
         std::vector<Token> m_list;
         ErrorReporter *m_error_reporter = ErrorReporter::getInstance();
@@ -25,8 +44,14 @@ class Scanner {
         bool is_at_end();
         char advance();
         void add_token(TokenType type);
+        void add_token(TokenType type, const char *text);
         void scan_token();
         bool match(char c);
+        char peek();
+        char peek_next();
+        void string();
+        void number();
+        void identifier();
 
 };
 

@@ -1,3 +1,4 @@
+#include <cctype>
 #include "./scanner.h"
 #include "../inc/token_types.h"
 
@@ -25,6 +26,7 @@ bool Scanner::is_at_end() {
 }
 
 void Scanner::scan_token() {
+    m_start = m_current;
     char c = advance();
     switch (c)
     {
@@ -42,8 +44,31 @@ void Scanner::scan_token() {
         case '=': add_token(match('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL); break;
         case '<': add_token(match('=') ? TokenType::LESS_EQUAL : TokenType::LESS); break;
         case '>': add_token(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER); break;
+        case '/': if( match('/') ) {
+            while (peek() != '\n' && !is_at_end()) advance();
+        } else {
+            add_token(TokenType::SLASH);
+        }
+        break;
+        case '\n':
+            m_line++;
+            break;
+        case ' ':
+        case '\r':
+        case '\t':
+        break;
+        case '"': string(); break;
+
     default:
-        m_error_reporter->error(m_line, "Unexpecter character");
+        if (isdigit(c)) {
+            number();
+            break;
+        }else if(isalpha(c)) {
+            identifier();
+            break;
+        }
+
+        m_error_reporter->error(m_line, "Unexpected character");
         break;
     }
 }
@@ -53,9 +78,65 @@ void Scanner::add_token(TokenType type) {
     m_list.push_back(Token(type, text.c_str(), m_line));
 }
 
+void Scanner::add_token(TokenType type, const char* text) {
+    m_list.push_back(Token(type, text, m_line));
+}
+
+void Scanner::identifier() {
+    while(isalnum(peek())) advance();
+
+    std::string text = m_source.substr(m_start, m_current - m_start);
+    TokenType type;
+
+    if(keywords.find(text.c_str()) == keywords.end()) 
+        type = TokenType::IDENTIFIER;
+    else
+        type = keywords.at(text.c_str());
+
+    add_token(type);
+}
+
+void Scanner::string() {
+    while(peek() != '"' && !is_at_end()) {
+        if(peek() == '\n') m_line++;
+
+        advance();
+    }
+
+    if (is_at_end()) {
+        m_error_reporter->error(m_line, "Unexpected end of string");
+    }
+
+    advance();
+
+    std::string value = m_source.substr(m_start + 1, (m_current - m_start) - 2);
+    add_token(TokenType::STRING, value.c_str());
+}
+
+void Scanner::number() {
+    while (isdigit(peek()) && !is_at_end()) advance();
+    if (peek() == '.' && isdigit(peek_next())) {
+        advance();
+        while (isdigit(peek()) && !is_at_end()) advance();
+    }
+
+    add_token(TokenType::NUMBER);
+
+}
+
+char Scanner::peek_next() {
+    if(m_current + 1 >= m_source.length()) return '\0';
+    return m_source.at(m_current + 1);
+}
+
 char Scanner::advance() {
     m_current++;
     return m_source.at(m_current - 1);
+}
+
+char Scanner::peek() {
+    if (is_at_end()) return '\0';
+    return m_source.at(m_current);
 }
 
 bool Scanner::match(char expected) {

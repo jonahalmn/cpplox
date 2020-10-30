@@ -8,6 +8,7 @@ std::string File::read() {
     if(m_file.is_open()) {
         while(std::getline(m_file, line)) {
             output += line;
+            output += '\n';
         }
     }
 
