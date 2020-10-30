@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <string>
 #include "./token.h"
 #include "./errorReporter.h"
 
@@ -9,7 +10,7 @@
 
 class Scanner {
     private:
-        std::map<const char*, TokenType> keywords = {
+        std::map<std::string, TokenType> keywords = {
             { "and", TokenType::AND },
             { "class", TokenType::CLASS },
             { "else", TokenType::ELSE },

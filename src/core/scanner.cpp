@@ -88,10 +88,14 @@ void Scanner::identifier() {
     std::string text = m_source.substr(m_start, m_current - m_start);
     TokenType type;
 
-    if(keywords.find(text.c_str()) == keywords.end()) 
+    std::cout << "The text:" << text << std::endl;
+
+    if(keywords.find(text) == keywords.end()) {
         type = TokenType::IDENTIFIER;
-    else
-        type = keywords.at(text.c_str());
+    }
+    else {
+        type = keywords.at(text);
+    }
 
     add_token(type);
 }
