@@ -6,5 +6,7 @@
 332; 34 35;
 234.34; 3334.2;
 (35);
-
+/* this is a multiline comment
+yoo yoo
+end og comment */
 var myvariable = 33;

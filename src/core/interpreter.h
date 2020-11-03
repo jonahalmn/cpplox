@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 #include "../fs/file.h"
-#include "./token.h"
-#include "./scanner.h"
+#include "./lexer/token.h"
+#include "./lexer/scanner.h"
 #include "./errorReporter.h"
 
 

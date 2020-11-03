@@ -1,6 +1,6 @@
 #include <cctype>
 #include "./scanner.h"
-#include "../inc/token_types.h"
+#include "../../inc/token_types.h"
 
 void Scanner::add_source(std::string source) {
     m_source = source;
@@ -46,6 +46,16 @@ void Scanner::scan_token() {
         case '>': add_token(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER); break;
         case '/': if( match('/') ) {
             while (peek() != '\n' && !is_at_end()) advance();
+        } else if ( match('*') ) {
+            while (peek() != '*' && peek_next() != '/' && !is_at_end()) {
+                if (peek() == '\n') m_line++;
+                advance();
+            };
+            if (is_at_end()) {
+                m_error_reporter->error(m_line, "Unexpected end of comment");
+            } else {
+                advance(2);
+            }
         } else {
             add_token(TokenType::SLASH);
         }
@@ -133,8 +143,8 @@ char Scanner::peek_next() {
     return m_source.at(m_current + 1);
 }
 
-char Scanner::advance() {
-    m_current++;
+char Scanner::advance(unsigned int step) {
+    m_current += step;
     return m_source.at(m_current - 1);
 }
 

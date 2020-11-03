@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "../inc/token_types.h"
+#include "../../inc/token_types.h"
 
 #ifndef TOKEN_H
 #define TOKEN_H

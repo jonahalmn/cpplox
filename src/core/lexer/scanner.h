@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include "./token.h"
-#include "./errorReporter.h"
+#include "../errorReporter.h"
 
 #ifndef SCANNER_H
 #define SCANNER_H
@@ -43,7 +43,7 @@ class Scanner {
         void add_source(std::string source);
         void scan_tokens();
         bool is_at_end();
-        char advance();
+        char advance(unsigned int step = 1);
         void add_token(TokenType type);
         void add_token(TokenType type, const char *text);
         void scan_token();
