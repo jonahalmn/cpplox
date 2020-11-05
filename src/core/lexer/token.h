@@ -7,11 +7,15 @@
 
 class Token {
     private:
+
+    public:
+
         TokenType m_token_type;
         std::string m_lexeme;
         unsigned int m_line;
 
-    public:
+        Token(){};
+
         Token(TokenType token_type, const char* lexeme, unsigned int line) :
             m_token_type{token_type}, m_lexeme{lexeme}, m_line{line} {}
 
