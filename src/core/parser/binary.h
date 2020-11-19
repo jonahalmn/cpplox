@@ -2,16 +2,17 @@
 #ifndef BINARY_H
 #define BINARY_H
 #include <iostream>
+#include <any>
 #include "./type_defs.h"
 #include "./expression.h"
 #include "../lexer/token.h"
-template<class T> class Binary : public Expression<T>{
+class Binary : public Expression {
 public:
- Expression<T> *m_left;
+ Expression *m_left;
  Token m_operator;
- Expression<T> *m_right;
-Binary(){}
-virtual T accept(Visitor<T> *visitor){
+ Expression *m_right;
+Binary( Expression *m_left, Token m_operator, Expression *m_right){}
+virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };
 virtual ~Binary(){};

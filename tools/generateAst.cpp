@@ -14,10 +14,10 @@ int main(int argc, char* argv[]) {
     };
 
     std::vector<std::string> types{
-        "Binary   : Expression<T> *m_left, Token m_operator, Expression<T> *m_right",
-        "Grouping : Expression<T> *m_expression",
+        "Binary   : Expression *m_left, Token m_operator, Expression *m_right",
+        "Grouping : Expression *m_expression",
         "Literal  : std::string m_value, std::string m_type",
-        "Unary    : Token m_operator, Expression<T> *m_right"
+        "Unary    : Token m_operator, Expression *m_right"
     };
     const char* base = "Expression";
 
@@ -66,11 +66,11 @@ std::string trim_string(std::string &str) {
     return result;
 }
 
-std::string replace_all(std::string str, char c = ',') {
+std::string replace_all(std::string str, char c = ',', std::string by = ";") {
     while (str.find(c) != std::string::npos)
     {
         unsigned int index = str.find(c);
-        str.replace(index, 1, ";");
+        str.replace(index, 1, by);
         str.insert(index + 1, "\n");
     }
 
@@ -86,7 +86,7 @@ void generateVisitor(std::string output_dir, std::string base_class, std::vector
     outfile << "#define VISITOR_H" << std::endl;
     outfile << "// this file has been auto generated" << std::endl;
     outfile << "#include \"./type_defs.h\"" << std::endl;
-    outfile << "template<class T> class Visitor {" << std::endl;
+    outfile << "class Visitor {" << std::endl;
     outfile << "public:" << std::endl;
     for(std::string type : types){
         std::string classname = type.substr(0, type.find(":"));
@@ -96,7 +96,7 @@ void generateVisitor(std::string output_dir, std::string base_class, std::vector
             lower_classname.end(),
             lower_classname.begin(),
             [](char c){ return std::tolower(c); });
-        outfile << "virtual T visit(" << trim(classname) << "<T> *" << trim(lower_classname) << ") = 0;" << std::endl;
+        outfile << "virtual std::any visit(" << trim(classname) << " *" << trim(lower_classname) << ") = 0;" << std::endl;
     };
     outfile << "virtual ~Visitor(){};" << std::endl;
     outfile << "};" << std::endl;
@@ -108,11 +108,11 @@ void generateVisitor(std::string output_dir, std::string base_class, std::vector
 
     typefile << "#ifndef TYPES_H" << std::endl;
     typefile << "#define TYPES_H" << std::endl;
-    typefile << "template<class T> class Expression;" << std::endl;
-    typefile << "template<class T> class Visitor;" << std::endl;
+    typefile << "class Expression;" << std::endl;
+    typefile << "class Visitor;" << std::endl;
     for(std::string type : types){
         std::string classname = type.substr(0, type.find(":"));
-        typefile << "template<class T> class " << trim(classname) << ";" << std::endl;
+        typefile << "class " << trim(classname) << ";" << std::endl;
     }
     typefile << "#endif" << std::endl;
 
@@ -137,10 +137,11 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
     outfile << "#ifndef EXPRESSION_H" << std::endl;
     outfile << "#define EXPRESSION_H" << std::endl;
     outfile << "#include <iostream>" << std::endl;
+    outfile << "#include <any>" << std::endl;
     outfile << "#include \"./visitor.h\"" << std::endl;
-    outfile << "template<class T> class Expression {" << std::endl;
+    outfile << "class Expression {" << std::endl;
     outfile << "public:" << std::endl;
-    outfile << "virtual T accept(Visitor<T> *visitor) = 0;" << std::endl;
+    outfile << "virtual std::any accept(Visitor *visitor) = 0;" << std::endl;
     outfile << "virtual ~Expression(){};" << std::endl;
     outfile << "};" << std::endl;
     outfile << "#endif" << std::endl;
@@ -170,14 +171,15 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
         outfile << "#ifndef " << ucase(trim(classname)) << "_H" << std::endl;
         outfile << "#define " << ucase(trim(classname)) << "_H" << std::endl;
         outfile << "#include <iostream>" << std::endl;
+        outfile << "#include <any>" << std::endl;
         outfile << "#include \"./type_defs.h\"" << std::endl;
         outfile << "#include \"./expression.h\"" << std::endl;
         outfile << "#include \"../lexer/token.h\"" << std::endl;
-        outfile << "template<class T> class " << trim(classname) << " : public " << base_class << "<T>" << "{" << std::endl;
+        outfile << "class " << trim(classname) << " : public " << base_class << " {" << std::endl;
         outfile << "public:" << std::endl;
         outfile << replace_all(arguments) << ";" << std::endl;
-        outfile << trim(classname) << "(){}" << std::endl;
-        outfile << "virtual T accept(Visitor<T> *visitor){" << std::endl;
+        // outfile << trim(classname) << "(" << arguments << "){}" << std::endl;
+        outfile << "virtual std::any accept(Visitor *visitor){" << std::endl;
         outfile << "return visitor->visit(this);" << std::endl;
         outfile << "};" << std::endl;
         outfile << "virtual ~" << trim(classname) << "(){};" << std::endl;

@@ -1,10 +1,11 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 #include <iostream>
+#include <any>
 #include "./visitor.h"
-template<class T> class Expression {
+class Expression {
 public:
-virtual T accept(Visitor<T> *visitor) = 0;
+virtual std::any accept(Visitor *visitor) = 0;
 virtual ~Expression(){};
 };
 #endif

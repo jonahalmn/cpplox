@@ -2,15 +2,16 @@
 #ifndef LITERAL_H
 #define LITERAL_H
 #include <iostream>
+#include <any>
 #include "./type_defs.h"
 #include "./expression.h"
 #include "../lexer/token.h"
-template<class T> class Literal : public Expression<T>{
+class Literal : public Expression {
 public:
  std::string m_value;
  std::string m_type;
-Literal(){}
-virtual T accept(Visitor<T> *visitor){
+Literal( std::string m_value, std::string m_type){}
+virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };
 virtual ~Literal(){};

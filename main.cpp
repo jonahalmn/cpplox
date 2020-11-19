@@ -2,7 +2,7 @@
 #include <fstream>
 #include "./src/core/interpreter.h"
 #include "./src/fs/file.h"
-#include "./src/core/parser/astPrinter.h"
+#include "./src/core/parser/reverseNotationner.h"
 #include "./src/core/parser/binary.h"
 #include "./src/core/parser/grouping.h"
 #include "./src/core/parser/literal.h"
@@ -20,14 +20,25 @@ int main(int argc, char* argv[]) {
 
     File file{ argv[1] };
     Interpreter interpreter{ &file };
-    AstPrinter printer;
+    ReverseNotationner printer;
 
-    Binary<std::string> binary;
-    // unary1.m_right = literal;
-    // binary.m_left = unary1;
-    // binary.m_right = unary2;
+    Binary binary;
+    Unary unary1;
+    Unary unary2;
+    Token token{TokenType::STAR, "*", 0};
+    Token token_m{TokenType::MINUS, "-", 0};
+    Literal literal;
+    literal.m_value = "123";
+    unary1.m_right = &literal;
+    unary1.m_operator = token_m;
 
-    // printer.print(&binary);
+    unary2.m_right = &literal;
+    unary2.m_operator = token_m;
+    binary.m_operator = token;
+    binary.m_left = &unary1;
+    binary.m_right = &unary2;
+
+    std::cout << printer.print(&binary) << std::endl;
 
     return 0;
 }
