@@ -119,6 +119,15 @@ void generateVisitor(std::string output_dir, std::string base_class, std::vector
 
 }
 
+std::string hydrate_members(std::vector<std::string> members) {
+    std::string final_string;
+    for (std::string member : members) {
+        final_string += member + "{" + member + "},";
+    }
+
+    return final_string.substr(0, final_string.length() - 1);
+}
+
 void generateAst(std::string output_dir, std::string base_class, std::vector<std::string> types) {
     std::cout << output_dir << base_class << std::endl;
 
@@ -165,7 +174,33 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
 
         std::ofstream outfile(filename);
 
-        std::cout << replace_all(arguments) << std::endl;
+        // std::cout << replace_all(arguments) << std::endl;
+
+        std::vector<std::string> members{};
+        std::string arguments_to_find = arguments;
+        while (arguments_to_find.find("m_") != std::string::npos)
+        {
+            // consume first string part
+            unsigned int found = arguments_to_find.find("m_");
+            arguments_to_find = arguments_to_find.substr(found, arguments_to_find.length() - found);
+
+            // isolate
+            found = arguments_to_find.find("m_");
+            unsigned int end_found = arguments_to_find.find(",");
+            if(!end_found || end_found > arguments_to_find.length()) end_found = arguments_to_find.length();
+
+            // std::cout << "found: " << found << ", " << end_found << std::endl;
+            std::cout << arguments_to_find.substr(found, end_found) << std::endl;
+            members.push_back(arguments_to_find.substr(found, end_found));
+            // std::cout << arguments_to_find << std::endl;
+            // std::cout << "[" << end_found << "," << arguments_to_find.length() << "]" << std::endl;
+
+            arguments_to_find = arguments_to_find.substr(end_found, arguments_to_find.length() - end_found);
+
+        }
+
+        std::cout << "////ok////" << std::endl;
+        
 
         outfile << "// this file has been auto generated" << std::endl;
         outfile << "#ifndef " << ucase(trim(classname)) << "_H" << std::endl;
@@ -178,7 +213,7 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
         outfile << "class " << trim(classname) << " : public " << base_class << " {" << std::endl;
         outfile << "public:" << std::endl;
         outfile << replace_all(arguments) << ";" << std::endl;
-        // outfile << trim(classname) << "(" << arguments << "){}" << std::endl;
+        outfile << trim(classname) << "(" << arguments << ") : " << hydrate_members(members) << "{}" << std::endl;
         outfile << "virtual std::any accept(Visitor *visitor){" << std::endl;
         outfile << "return visitor->visit(this);" << std::endl;
         outfile << "};" << std::endl;

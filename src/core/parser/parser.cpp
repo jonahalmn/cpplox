@@ -11,7 +11,7 @@ Expression* Parser::equality() {
 
     while (match(types))
     {
-        Token token_operator;
+        Token token_operator{previous()};
         Expression* right = comparison();
         Binary *binary = new Binary{expr, token_operator, expr};
         expr = binary;
@@ -19,6 +19,22 @@ Expression* Parser::equality() {
 
     return expr;
 }
+
+Expression* Parser::comparison() {
+    Expression* expr = term();
+
+    TokenType types[] {TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESS, TokenType::LESS_EQUAL};
+
+    while(match(types)) {
+        Token token_operator{previous()};
+        Expression* right = term();
+        Binary *binary = new Binary{expr, token_operator, expr};
+        expr = binary;
+    }
+
+    return expr;
+}
+
 
 bool Parser::match(const TokenType types[]) {
     for(int i = 0; i < sizeof(types) / sizeof(TokenType); i++ ) {
@@ -36,10 +52,20 @@ Token Parser::previous() {
 }
 
 Token Parser::advance() {
+    if(!is_at_end) m_current++;
+    return previous();
+}
 
+Token Parser::peek() {
+    return m_tokens[m_current];
 }
 
 bool Parser::is_at_end() {
+    return peek().m_token_type = TokenType::END_OF_FILE;
+}
+
+bool Parser::check(TokenType type) {
+    if(is_at_end()) return false;
 
 }
 

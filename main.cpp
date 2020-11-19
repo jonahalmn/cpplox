@@ -22,13 +22,13 @@ int main(int argc, char* argv[]) {
     Interpreter interpreter{ &file };
     ReverseNotationner printer;
 
-    Binary binary;
-    Unary unary1;
-    Unary unary2;
-    Token token{TokenType::STAR, "*", 0};
     Token token_m{TokenType::MINUS, "-", 0};
-    Literal literal;
-    literal.m_value = "123";
+    std::string val{"123"};
+    Literal literal{val};
+    Unary unary1{token_m, &literal};
+    Unary unary2;
+    Binary binary;
+    Token token{TokenType::STAR, "*", 0};
     unary1.m_right = &literal;
     unary1.m_operator = token_m;
 

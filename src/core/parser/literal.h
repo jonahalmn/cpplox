@@ -10,7 +10,7 @@ class Literal : public Expression {
 public:
  std::string m_value;
  std::string m_type;
-Literal( std::string m_value, std::string m_type){}
+Literal( std::string m_value, std::string m_type) : m_value{m_value},m_type{m_type}{}
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };

@@ -9,7 +9,7 @@
 class Grouping : public Expression {
 public:
  Expression *m_expression;
-Grouping( Expression *m_expression){}
+Grouping( Expression *m_expression) : m_expression{m_expression}{}
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };

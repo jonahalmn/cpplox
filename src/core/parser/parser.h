@@ -13,10 +13,16 @@ class Parser {
         Expression* expression();
         Expression* equality();
         Expression* comparison();
+        Expression* term();
+        Expression* factor();
+        Expression* unary();
+        Expression* primary();
 
         Token advance();
         Token previous();
+        Token peek();
 
+        bool check(const TokenType);
         bool match(const TokenType[]);
         bool is_at_end();
 
