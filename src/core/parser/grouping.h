@@ -13,6 +13,9 @@ Grouping( Expression *m_expression) : m_expression{m_expression}{}
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };
+virtual Grouping* clone(){
+return new Grouping(*this);
+};
 virtual ~Grouping(){};
 };
 #endif

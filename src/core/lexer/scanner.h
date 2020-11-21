@@ -54,6 +54,8 @@ class Scanner {
         void number();
         void identifier();
 
+        std::vector<Token> get_tokens();
+
 };
 
 #endif

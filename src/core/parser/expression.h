@@ -7,5 +7,6 @@ class Expression {
 public:
 virtual std::any accept(Visitor *visitor) = 0;
 virtual ~Expression(){};
+virtual Expression *clone() = 0;
 };
 #endif

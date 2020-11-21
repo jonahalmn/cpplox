@@ -8,11 +8,13 @@
 #include "../lexer/token.h"
 class Literal : public Expression {
 public:
- std::string m_value;
- std::string m_type;
-Literal( std::string m_value, std::string m_type) : m_value{m_value},m_type{m_type}{}
+ std::any m_value;
+Literal( std::any m_value) : m_value{m_value}{}
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
+};
+virtual Literal* clone(){
+return new Literal(*this);
 };
 virtual ~Literal(){};
 };

@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> types{
         "Binary   : Expression *m_left, Token m_operator, Expression *m_right",
         "Grouping : Expression *m_expression",
-        "Literal  : std::string m_value, std::string m_type",
+        "Literal  : std::any m_value",
         "Unary    : Token m_operator, Expression *m_right"
     };
     const char* base = "Expression";
@@ -152,6 +152,7 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
     outfile << "public:" << std::endl;
     outfile << "virtual std::any accept(Visitor *visitor) = 0;" << std::endl;
     outfile << "virtual ~Expression(){};" << std::endl;
+    outfile << "virtual Expression *clone() = 0;" << std::endl;
     outfile << "};" << std::endl;
     outfile << "#endif" << std::endl;
 
@@ -216,6 +217,9 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
         outfile << trim(classname) << "(" << arguments << ") : " << hydrate_members(members) << "{}" << std::endl;
         outfile << "virtual std::any accept(Visitor *visitor){" << std::endl;
         outfile << "return visitor->visit(this);" << std::endl;
+        outfile << "};" << std::endl;
+        outfile << "virtual "<< trim(classname) << "* clone(){" << std::endl;
+        outfile << "return new "<< trim(classname) << "(*this);" << std::endl;
         outfile << "};" << std::endl;
         outfile << "virtual ~" << trim(classname) << "(){};" << std::endl;
         outfile << "};" << std::endl;

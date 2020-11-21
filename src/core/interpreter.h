@@ -4,7 +4,9 @@
 #include "../fs/file.h"
 #include "./lexer/token.h"
 #include "./lexer/scanner.h"
+#include "./parser/parser.h"
 #include "./errorReporter.h"
+#include "./parser/astPrinter.h"
 
 
 #ifndef INTERPRETER_H

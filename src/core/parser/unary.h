@@ -14,6 +14,9 @@ Unary( Token m_operator, Expression *m_right) : m_operator{m_operator},m_right{m
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };
+virtual Unary* clone(){
+return new Unary(*this);
+};
 virtual ~Unary(){};
 };
 #endif

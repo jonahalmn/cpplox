@@ -11,4 +11,8 @@ void Interpreter::run() {
         std::cout << "error raised" << std::endl;
         std::exit(1);
     }
+    Parser parser{m_scanner.get_tokens()};
+    Expression* expr = parser.parse();
+    AstPrinter printer;
+    std::cout << printer.print(expr) << std::endl;
 }

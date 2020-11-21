@@ -2,6 +2,10 @@
 #include "./scanner.h"
 #include "../../inc/token_types.h"
 
+std::vector<Token> Scanner::get_tokens() {
+    return m_list;
+}
+
 void Scanner::add_source(std::string source) {
     m_source = source;
 }

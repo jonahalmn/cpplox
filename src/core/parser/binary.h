@@ -15,6 +15,9 @@ Binary( Expression *m_left, Token m_operator, Expression *m_right) : m_left{m_le
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };
+virtual Binary* clone(){
+return new Binary(*this);
+};
 virtual ~Binary(){};
 };
 #endif

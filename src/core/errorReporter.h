@@ -1,4 +1,5 @@
 #include <iostream>
+#include "./lexer/token.h"
 #ifndef ERROR_H
 #define ERROR_H
 
@@ -13,6 +14,7 @@ class ErrorReporter {
         static ErrorReporter* getInstance();
         int had_error();
         void error(unsigned int line, const char* message);
+        void error(Token token, const char* message);
         void report(unsigned int line, const char* where, const char* message);
 };
 
