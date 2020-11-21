@@ -9,7 +9,19 @@ Expression * Parser::parse() {
 }
 
 Expression* Parser::expression() {
-    return equality();
+    Expression* expr = equality();
+
+    std::vector<TokenType> types{TokenType::COMMA};
+
+    while (match(types))
+    {
+        Token token_operator{previous()};
+        Expression* right = equality();
+        Binary *binary = new Binary{expr->clone(), token_operator, right->clone()};
+        expr = binary;
+    }
+
+    return expr;
 }
 
 Expression* Parser::equality() {
