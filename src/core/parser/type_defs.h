@@ -6,4 +6,5 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Ternary;
 #endif

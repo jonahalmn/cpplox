@@ -8,6 +8,7 @@
 #include "./grouping.h"
 #include "./literal.h"
 #include "./unary.h"
+#include "./ternary.h"
 
 
 class AstPrinter : public Visitor {
@@ -35,6 +36,11 @@ class AstPrinter : public Visitor {
             return parenthize(unary->m_operator.m_lexeme, expressions);
         }
 
+        virtual std::any visit(Ternary *ternary) {
+            std::vector<Expression *> expressions{ ternary->m_condition, ternary->m_consequence, ternary->m_alternative };
+            return parenthize("?:", expressions);
+        }
+
     protected:
         std::string parenthize(std::string name, std::vector<Expression*> exps) {
             std::string final_string;
@@ -43,7 +49,12 @@ class AstPrinter : public Visitor {
 
             for(auto expr : exps) {
                 final_string += " ";
-                final_string += std::any_cast<std::string>(expr->accept(this));
+                std::any value = expr->accept(this);
+                if(value.type() == typeid(bool)) {
+                    std::any_cast<bool>(value) ? final_string += "true" : final_string += "false";
+                } else {
+                    final_string += std::any_cast<std::string>(expr->accept(this));
+                }
             }
 
             final_string += ")";

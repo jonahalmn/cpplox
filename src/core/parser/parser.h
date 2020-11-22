@@ -6,6 +6,7 @@
 #include "./unary.h"
 #include "./literal.h"
 #include "./grouping.h"
+#include "./ternary.h"
 #include "../error/parseError.h"
 #include "../errorReporter.h"
 #include <any>
@@ -17,6 +18,7 @@ class Parser {
         ErrorReporter *m_error_reporter = ErrorReporter::getInstance();
 
         Expression* expression();
+        Expression* ternary();
         Expression* equality();
         Expression* comparison();
         Expression* term();

@@ -17,7 +17,8 @@ int main(int argc, char* argv[]) {
         "Binary   : Expression *m_left, Token m_operator, Expression *m_right",
         "Grouping : Expression *m_expression",
         "Literal  : std::any m_value",
-        "Unary    : Token m_operator, Expression *m_right"
+        "Unary    : Token m_operator, Expression *m_right",
+        "Ternary  : Expression *m_condition, Expression *m_consequence, Expression *m_alternative",
     };
     const char* base = "Expression";
 
@@ -201,7 +202,7 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
         }
 
         std::cout << "////ok////" << std::endl;
-        
+
 
         outfile << "// this file has been auto generated" << std::endl;
         outfile << "#ifndef " << ucase(trim(classname)) << "_H" << std::endl;

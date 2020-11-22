@@ -9,16 +9,33 @@ Expression * Parser::parse() {
 }
 
 Expression* Parser::expression() {
-    Expression* expr = equality();
+    Expression* expr = ternary();
 
     std::vector<TokenType> types{TokenType::COMMA};
 
     while (match(types))
     {
         Token token_operator{previous()};
-        Expression* right = equality();
+        Expression* right = ternary();
         Binary *binary = new Binary{expr->clone(), token_operator, right->clone()};
         expr = binary;
+    }
+
+    return expr;
+}
+
+Expression* Parser::ternary() {
+    Expression* expr = equality();
+
+    std::vector<TokenType> types{TokenType::QUESTION_MARK};
+
+    while (match(types))
+    {
+        Expression* consequence = equality();
+        consume(TokenType::COLON, "Expect ':'");
+        Expression* alternative = equality();
+        Ternary *ternary = new Ternary{expr->clone(), consequence->clone(), alternative->clone()};
+        expr = ternary;
     }
 
     return expr;
@@ -100,23 +117,22 @@ Expression* Parser::unary() {
 }
 
 Expression* Parser::primary() {
-    Literal *literal = new Literal{NULL};
 
     std::vector<TokenType> F{TokenType::FALSE};
     if(match(F)) {
-        literal->m_value = false;
+        Literal *literal = new Literal{false};
         return literal;
     }
 
     std::vector<TokenType> T{TokenType::TRUE};
     if(match(T)) {
-        literal->m_value = true;
+        Literal *literal = new Literal{true};
         return literal;
     }
 
     std::vector<TokenType> NT{TokenType::NUMBER, TokenType::STRING};
     if(match(NT)) {
-        literal->m_value = previous().m_lexeme;
+        Literal *literal = new Literal{previous().m_lexeme};
         return literal;
     }
 
