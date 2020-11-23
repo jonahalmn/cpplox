@@ -52,6 +52,8 @@ class AstPrinter : public Visitor {
                 std::any value = expr->accept(this);
                 if(value.type() == typeid(bool)) {
                     std::any_cast<bool>(value) ? final_string += "true" : final_string += "false";
+                } else if(value.type() == typeid(double)) {
+                    final_string += std::to_string(std::any_cast<double>(expr->accept(this)));
                 } else {
                     final_string += std::any_cast<std::string>(expr->accept(this));
                 }

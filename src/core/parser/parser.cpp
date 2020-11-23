@@ -130,8 +130,14 @@ Expression* Parser::primary() {
         return literal;
     }
 
-    std::vector<TokenType> NT{TokenType::NUMBER, TokenType::STRING};
-    if(match(NT)) {
+    std::vector<TokenType> N{TokenType::NUMBER};
+    if(match(N)) {
+        Literal *literal = new Literal{std::atof(previous().m_lexeme.c_str())};
+        return literal;
+    }
+
+    std::vector<TokenType> S{TokenType::STRING};
+    if(match(S)) {
         Literal *literal = new Literal{previous().m_lexeme};
         return literal;
     }

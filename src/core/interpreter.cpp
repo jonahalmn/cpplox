@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "./interpreter.h"
+#include "./errorReporter.h"
 
 void Interpreter::run() {
 
@@ -14,5 +15,12 @@ void Interpreter::run() {
     Parser parser{m_scanner.get_tokens()};
     Expression* expr = parser.parse();
     AstPrinter printer;
-    std::cout << printer.print(expr) << std::endl;
+    if(ErrorReporter::getInstance()->had_error()) {
+        std::cout << "panic mode: parser encount error" << std::endl;
+        exit(1);
+    }
+
+    Evaluator evaluator;
+    evaluator.interpret(expr);
+    // std::cout << printer.print(expr) << std::endl;
 }

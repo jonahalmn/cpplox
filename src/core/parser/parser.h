@@ -10,6 +10,7 @@
 #include "../error/parseError.h"
 #include "../errorReporter.h"
 #include <any>
+#include <cstdlib>
 
 class Parser {
     private:

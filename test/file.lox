@@ -1,1 +1,1 @@
-true ? 3 * 4 + 3 + 4 * 2 : 3* 5 + 6 // this is a comment
+3 * 3 // this is a comment
