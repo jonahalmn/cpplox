@@ -39,6 +39,7 @@ std::any Evaluator::visit(Binary *binary) {
         break;
     case TokenType::SLASH:
         checkNumberOperands(binary->m_operator, left, right);
+        if(std::any_cast<double>(right) == 0) throw RuntimeError(binary->m_operator, "You should go in maths class, can't divide by 0");
         return std::any_cast<double>(left) / std::any_cast<double>(right);
         break;
     case TokenType::MINUS:
@@ -66,9 +67,13 @@ std::any Evaluator::visit(Binary *binary) {
             return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
         } else if (left.type() == typeid(double) && right.type() == typeid(double)) {
             return std::any_cast<double>(left) + std::any_cast<double>(right);
+        } else if (left.type() == typeid(std::string) && right.type() == typeid(double)) {
+            return std::any_cast<std::string>(left) + std::to_string(std::any_cast<double>(right));
+        } else if (left.type() == typeid(double) && right.type() == typeid(std::string)) {
+            return std::to_string(std::any_cast<double>(left)) + std::any_cast<std::string>(right);
         }
 
-        throw new RuntimeError(binary->m_operator, "Operands must be two numbers or two strings.");
+        throw RuntimeError(binary->m_operator, "Operands must be two numbers or two strings.");
         break;
     case TokenType::BANG_EQUAL:
         return !isEqual(left, right);
@@ -77,7 +82,7 @@ std::any Evaluator::visit(Binary *binary) {
         return isEqual(left, right);
         break;
     default:
-        throw new RuntimeError(binary->m_operator, "couldnt understand operator");
+        throw RuntimeError(binary->m_operator, "couldnt understand operator");
         return 1;
         break;
     }
@@ -89,6 +94,17 @@ std::any Evaluator::visit(Ternary *ternary) {
     std::any alternative = evaluate(ternary->m_alternative);
 
     return isTruthy(condition) ? consequence : alternative;
+}
+
+std::any Evaluator::visit(StmtExpression *stmtExpr) {
+    evaluate(stmtExpr->m_expression);
+    return nullptr;
+}
+
+std::any Evaluator::visit(Print *print) {
+    std::any value = evaluate(print->m_expression);
+    std::cout << stringify(value) << std::endl;
+    return nullptr;
 }
 
 void Evaluator::checkNumberOperand(Token token, std::any operand) {
@@ -125,15 +141,22 @@ bool Evaluator::isTruthy(std::any expr) {
     return true;
 }
 
-std::any Evaluator::interpret(Expression *expr) {
+std::any Evaluator::interpret(std::vector<Statement *> list) {
     try {
-        std::any value = evaluate(expr);
-        std::cout << stringify(value) << std::endl;
+        for(Statement* stmt : list) {
+            execute(stmt);
+        }
+        return 1;
     } catch (RuntimeError e) {
-        std::cout << "runtime error" << std::endl;
+        runtimeError(e);
     }
 
     return 1;
+}
+
+void Evaluator::runtimeError(RuntimeError e) {
+    m_has_runtime_error = true;
+    m_error_reporter->error(e);
 }
 
 std::string Evaluator::stringify(std::any value) {
@@ -158,4 +181,8 @@ std::string Evaluator::stringify(std::any value) {
 
 std::any Evaluator::evaluate(Expression* expr) {
     return expr->accept(this);
+}
+
+std::any Evaluator::execute(Statement *stmt) {
+    return stmt->accept(this);
 }

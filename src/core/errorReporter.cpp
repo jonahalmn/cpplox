@@ -15,6 +15,10 @@ int ErrorReporter::had_error() {
     return m_had_error;
 }
 
+int ErrorReporter::had_runtime_error() {
+    return m_had_runtime_error;
+}
+
 void ErrorReporter::error(unsigned int line, const char* message) {
     report(line, "", message);
 }
@@ -29,8 +33,13 @@ void ErrorReporter::error(Token token, const char* message) {
     report(token.m_line, where.c_str(), message);
 }
 
+void ErrorReporter::error(RuntimeError e) {
+    m_had_runtime_error = 1;
+    report(e.m_token.m_line, "runtime", e.m_message.c_str());
+}
+
 void ErrorReporter::report(unsigned int line, const char* where, const char* message) {
     std::cerr << "[line " << line << "] Error "
-        << where << ":" << message << std::endl;
+        << where << " : " << message << std::endl;
     m_had_error = 1;
 }

@@ -1,12 +1,12 @@
-#ifndef Expression_H
-#define Expression_H
+#ifndef Statement_H
+#define Statement_H
 #include <iostream>
 #include <any>
 #include "../visitor.h"
-class Expression {
+class Statement {
 public:
 virtual std::any accept(Visitor *visitor) = 0;
-virtual ~Expression(){};
-virtual Expression *clone() = 0;
+virtual ~Statement(){};
+virtual Statement *clone() = 0;
 };
 #endif

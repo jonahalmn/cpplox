@@ -1,11 +1,39 @@
 #include "./parser.h"
 
-Expression * Parser::parse() {
-    try {
-        return expression();
-    } catch(ParseError e) {
-        return NULL;
+std::vector<Statement*> Parser::parse() {
+    std::vector<Statement *> list;
+
+    while (!is_at_end())
+    {
+        list.push_back(statement());
     }
+
+    return list;
+}
+
+Statement *Parser::statement() {
+    std::vector<TokenType> types{TokenType::PRINT};
+    if(match(types)) return printStatement();
+
+    return expressionStatement();
+}
+
+Statement *Parser::printStatement() {
+    Expression *value = expression();
+    consume(TokenType::SEMICOLON, "Expect ; after statement");
+    Print *stmt = new Print{value};
+    return stmt;
+}
+
+Statement * Parser::expressionStatement() {
+    Expression *value = expression();
+    consume(TokenType::SEMICOLON, "Expect ; after expression");
+    Statement *stmt = new StmtExpression{value};
+    return stmt;
+    // try {
+    // } catch(ParseError e) {
+    //     return NULL;
+    // }
 }
 
 Expression* Parser::expression() {

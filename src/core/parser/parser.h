@@ -2,11 +2,14 @@
 #include <vector>
 #include "../lexer/token.h"
 #include "./expression.h"
+#include "./statement.h"
 #include "./binary.h"
 #include "./unary.h"
 #include "./literal.h"
 #include "./grouping.h"
 #include "./ternary.h"
+#include "./print.h"
+#include "./stmtexpression.h"
 #include "../error/parseError.h"
 #include "../errorReporter.h"
 #include <any>
@@ -27,6 +30,10 @@ class Parser {
         Expression* unary();
         Expression* primary();
 
+        Statement* statement();
+        Statement* printStatement();
+        Statement* expressionStatement();
+
         Token advance();
         Token previous();
         Token peek();
@@ -42,6 +49,7 @@ class Parser {
     public:
         Parser(std::vector<Token> tokens) : m_tokens{tokens} {}
 
-        Expression* parse();
+        // Expression* parse();
+        std::vector<Statement*> parse();
 
 };

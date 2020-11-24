@@ -13,14 +13,14 @@ void Interpreter::run() {
         std::exit(1);
     }
     Parser parser{m_scanner.get_tokens()};
-    Expression* expr = parser.parse();
-    AstPrinter printer;
+    std::vector<Statement *> stmts = parser.parse();
     if(ErrorReporter::getInstance()->had_error()) {
         std::cout << "panic mode: parser encount error" << std::endl;
         exit(1);
     }
 
     Evaluator evaluator;
-    evaluator.interpret(expr);
-    // std::cout << printer.print(expr) << std::endl;
+    std::any value = evaluator.interpret(stmts);
+    if(ErrorReporter::getInstance()->had_runtime_error()) exit(70);
+    // std::cout << evaluator.stringify(value) << std::endl;
 }

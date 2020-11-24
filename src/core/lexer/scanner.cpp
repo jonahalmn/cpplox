@@ -18,10 +18,10 @@ void Scanner::scan_tokens() {
 
     m_list.push_back(Token(TokenType::END_OF_FILE, "", m_line));
 
-    for (auto &token : m_list) // access by reference to avoid copying
-    {
-        std::cout << token << std::endl;
-    }
+    // for (auto &token : m_list) // access by reference to avoid copying
+    // {
+    //     std::cout << token << std::endl;
+    // }
 }
 
 
@@ -103,8 +103,6 @@ void Scanner::identifier() {
 
     std::string text = m_source.substr(m_start, m_current - m_start);
     TokenType type;
-
-    std::cout << "The text:" << text << std::endl;
 
     if(keywords.find(text) == keywords.end()) {
         type = TokenType::IDENTIFIER;

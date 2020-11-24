@@ -1,10 +1,14 @@
 #include <iostream>
 #include "../lexer/token.h"
 
+#ifndef RT_ERROR_H
+#define RT_ERROR_H
+
 class RuntimeError {
-    private:
+    public:
         Token m_token;
         std::string m_message;
-    public:
         RuntimeError(Token token, std::string message) : m_token{token}, m_message{message} {}
 };
+
+#endif

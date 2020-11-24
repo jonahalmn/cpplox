@@ -1,22 +1,22 @@
 // this file has been auto generated
-#ifndef GROUPING_H
-#define GROUPING_H
+#ifndef STMTEXPRESSION_H
+#define STMTEXPRESSION_H
 #include <iostream>
 #include <any>
 #include "./type_defs.h"
 #include "./expression.h"
 #include "./statement.h"
 #include "../lexer/token.h"
-class Grouping : public Expression {
+class StmtExpression : public Statement {
 public:
  Expression *m_expression;
-Grouping( Expression *m_expression) : m_expression{m_expression}{}
+StmtExpression( Expression *m_expression) : m_expression{m_expression}{}
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };
-virtual Grouping* clone(){
-return new Grouping(*this);
+virtual StmtExpression* clone(){
+return new StmtExpression(*this);
 };
-virtual ~Grouping(){};
+virtual ~StmtExpression(){};
 };
 #endif

@@ -13,16 +13,30 @@ int main(int argc, char* argv[]) {
         return 1;
     };
 
-    std::vector<std::string> types{
+    std::vector<std::string> types_e{
         "Binary   : Expression *m_left, Token m_operator, Expression *m_right",
         "Grouping : Expression *m_expression",
         "Literal  : std::any m_value",
         "Unary    : Token m_operator, Expression *m_right",
         "Ternary  : Expression *m_condition, Expression *m_consequence, Expression *m_alternative",
     };
-    const char* base = "Expression";
 
-    generateAst(argv[1], base, types);
+    std::vector<std::string> types_s{
+        "StmtExpression : Expression *m_expression",
+        "Print : Expression *m_expression",
+    };
+
+    const char* base = "Expression";
+    const char* base_s = "Statement";
+
+    generateAst(argv[1], base, types_e);
+    generateAst(argv[1], base_s, types_s);
+
+    std::vector<std::string> types;
+    types.reserve(types_e.size() + types_s.size());
+    types.insert(types.end(), types_e.begin(), types_e.end());
+    types.insert(types.end(), types_s.begin(), types_s.end());
+
     generateVisitor(argv[1], base, types);
 
     return 0;
@@ -79,14 +93,14 @@ std::string replace_all(std::string str, char c = ',', std::string by = ";") {
 }
 
 void generateVisitor(std::string output_dir, std::string base_class, std::vector<std::string> types) {
-    std::string filename{output_dir + "visitor.h"};
+    std::string filename{output_dir + "../visitor.h"};
     std::cout << base_class << std::endl;
     std::ofstream outfile(filename);
 
     outfile << "#ifndef VISITOR_H" << std::endl;
     outfile << "#define VISITOR_H" << std::endl;
     outfile << "// this file has been auto generated" << std::endl;
-    outfile << "#include \"./type_defs.h\"" << std::endl;
+    outfile << "#include \"./parser/type_defs.h\"" << std::endl;
     outfile << "class Visitor {" << std::endl;
     outfile << "public:" << std::endl;
     for(std::string type : types){
@@ -110,6 +124,7 @@ void generateVisitor(std::string output_dir, std::string base_class, std::vector
     typefile << "#ifndef TYPES_H" << std::endl;
     typefile << "#define TYPES_H" << std::endl;
     typefile << "class Expression;" << std::endl;
+    typefile << "class Statement;" << std::endl;
     typefile << "class Visitor;" << std::endl;
     for(std::string type : types){
         std::string classname = type.substr(0, type.find(":"));
@@ -144,16 +159,16 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
     std::string filename{output_dir + trim(lower_base_class) + ".h"};
     std::ofstream outfile(filename);
 
-    outfile << "#ifndef EXPRESSION_H" << std::endl;
-    outfile << "#define EXPRESSION_H" << std::endl;
+    outfile << "#ifndef " << base_class << "_H" << std::endl;
+    outfile << "#define " << base_class << "_H" << std::endl;
     outfile << "#include <iostream>" << std::endl;
     outfile << "#include <any>" << std::endl;
-    outfile << "#include \"./visitor.h\"" << std::endl;
-    outfile << "class Expression {" << std::endl;
+    outfile << "#include \"../visitor.h\"" << std::endl;
+    outfile << "class " << base_class << " {" << std::endl;
     outfile << "public:" << std::endl;
     outfile << "virtual std::any accept(Visitor *visitor) = 0;" << std::endl;
-    outfile << "virtual ~Expression(){};" << std::endl;
-    outfile << "virtual Expression *clone() = 0;" << std::endl;
+    outfile << "virtual ~" << base_class << "(){};" << std::endl;
+    outfile << "virtual " << base_class << " *clone() = 0;" << std::endl;
     outfile << "};" << std::endl;
     outfile << "#endif" << std::endl;
 
@@ -211,6 +226,7 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
         outfile << "#include <any>" << std::endl;
         outfile << "#include \"./type_defs.h\"" << std::endl;
         outfile << "#include \"./expression.h\"" << std::endl;
+        outfile << "#include \"./statement.h\"" << std::endl;
         outfile << "#include \"../lexer/token.h\"" << std::endl;
         outfile << "class " << trim(classname) << " : public " << base_class << " {" << std::endl;
         outfile << "public:" << std::endl;
