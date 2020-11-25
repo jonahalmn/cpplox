@@ -3,6 +3,7 @@
 #define VARIABLE_H
 #include <iostream>
 #include <any>
+#include <vector>
 #include "./type_defs.h"
 #include "./expression.h"
 #include "./statement.h"

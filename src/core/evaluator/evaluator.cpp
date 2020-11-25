@@ -125,17 +125,23 @@ std::any Evaluator::visit(Var *var) {
         value = evaluate(var->m_initializer);
     }
 
-    m_environment.define(var->m_name, value);
+    m_environment->define(var->m_name, value);
     return nullptr;
 }
 
 std::any Evaluator::visit(Variable *variable) {
-    return m_environment.get(variable->m_name);
+    return m_environment->get(variable->m_name);
+}
+
+std::any Evaluator::visit(Block *block) {
+    Environment *environment = new Environment{m_environment};
+    executeBlock(block, environment);
+    return nullptr;
 }
 
 std::any Evaluator::visit(Assign *assign) {
     std::any value = evaluate(assign->m_value);
-    return m_environment.assign(assign->m_name, value);
+    return m_environment->assign(assign->m_name, value);
 }
 
 bool Evaluator::isEqual(std::any left, std::any right) {
@@ -204,4 +210,23 @@ std::any Evaluator::evaluate(Expression* expr) {
 
 std::any Evaluator::execute(Statement *stmt) {
     return stmt->accept(this);
+}
+
+std::any Evaluator::executeBlock(Block *block, Environment *environment) {
+    Environment* prev = m_environment;
+    try {
+        m_environment = environment;
+        for(Statement *stmt : *block->m_statements) {
+            execute(stmt);
+        }
+    } catch(RuntimeError e) {
+        m_environment = prev;
+        runtimeError(e);
+        return nullptr;
+    }
+
+    m_environment = prev;
+
+
+    return nullptr;
 }

@@ -14,6 +14,7 @@ virtual std::any visit(Assign *assign) = 0;
 virtual std::any visit(StmtExpression *stmtexpression) = 0;
 virtual std::any visit(Print *print) = 0;
 virtual std::any visit(Var *var) = 0;
+virtual std::any visit(Block *block) = 0;
 virtual ~Visitor(){};
 };
 #endif

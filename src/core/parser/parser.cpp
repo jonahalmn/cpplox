@@ -20,7 +20,8 @@ Statement *Parser::declaration() {
         sync();
     }
 
-    return nullptr;
+    std::cout << "kill all" << std::endl;
+    exit(70);
 }
 
 Statement *Parser::varDeclaration() {
@@ -39,10 +40,26 @@ Statement *Parser::varDeclaration() {
 }
 
 Statement *Parser::statement() {
-    std::vector<TokenType> types{TokenType::PRINT};
-    if(match(types)) return printStatement();
+    if(match(std::vector<TokenType> {TokenType::PRINT}))
+        return printStatement();
+
+    if(match(std::vector<TokenType>{TokenType::LEFT_BRACE}))
+        return block();
 
     return expressionStatement();
+}
+
+Statement *Parser::block() {
+    std::vector<Statement *> *stmts = new std::vector<Statement *>;
+
+    while(!check(TokenType::RIGHT_BRACE) && !is_at_end()) {
+        stmts->push_back(declaration());
+    }
+
+    consume(TokenType::RIGHT_BRACE, "Expect '}' after block");
+
+    Block *block = new Block{ stmts };
+    return block;
 }
 
 Statement *Parser::printStatement() {

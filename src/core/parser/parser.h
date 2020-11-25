@@ -12,6 +12,7 @@
 #include "./print.h"
 #include "./var.h"
 #include "./variable.h"
+#include "./block.h"
 #include "./stmtexpression.h"
 #include "../error/parseError.h"
 #include "../errorReporter.h"
@@ -33,6 +34,8 @@ class Parser {
         Expression* factor();
         Expression* unary();
         Expression* primary();
+
+        Statement* block();
 
         Statement* statement();
         Statement* printStatement();

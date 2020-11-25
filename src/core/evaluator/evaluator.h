@@ -16,6 +16,7 @@
 #include "../parser/var.h"
 #include "../parser/variable.h"
 #include "../parser/assign.h"
+#include "../parser/block.h"
 
 #include "./environment.h"
 
@@ -27,11 +28,12 @@ class Evaluator : public Visitor {
         bool m_has_runtime_error = false;
         ErrorReporter *m_error_reporter = ErrorReporter::getInstance();
 
-        Environment m_environment{};
+        Environment *m_environment = new Environment{};
 
         std::any interpret(std::vector<Statement *>);
         std::any evaluate(Expression*);
         std::any execute(Statement*);
+        std::any executeBlock(Block*, Environment*);
 
         std::string stringify(std::any);
         void runtimeError(RuntimeError);
@@ -51,6 +53,8 @@ class Evaluator : public Visitor {
         virtual std::any visit(Var *var);
         virtual std::any visit(Variable *variable);
         virtual std::any visit(Assign *assign);
+
+        virtual std::any visit(Block *block);
 
         void checkNumberOperand(Token token, std::any operand);
         void checkNumberOperands(Token token, std::any left, std::any right);

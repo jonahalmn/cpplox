@@ -13,4 +13,5 @@ class Assign;
 class StmtExpression;
 class Print;
 class Var;
+class Block;
 #endif

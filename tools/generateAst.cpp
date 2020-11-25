@@ -26,7 +26,8 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> types_s{
         "StmtExpression : Expression *m_expression",
         "Print : Expression *m_expression",
-        "Var : Token m_name, Expression *m_initializer"
+        "Var : Token m_name, Expression *m_initializer",
+        "Block : std::vector<Statement *> *m_statements"
     };
 
     const char* base = "Expression";
@@ -227,6 +228,7 @@ void generateAst(std::string output_dir, std::string base_class, std::vector<std
         outfile << "#define " << ucase(trim(classname)) << "_H" << std::endl;
         outfile << "#include <iostream>" << std::endl;
         outfile << "#include <any>" << std::endl;
+        outfile << "#include <vector>" << std::endl;
         outfile << "#include \"./type_defs.h\"" << std::endl;
         outfile << "#include \"./expression.h\"" << std::endl;
         outfile << "#include \"./statement.h\"" << std::endl;

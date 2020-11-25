@@ -9,6 +9,8 @@ std::any Environment::get(Token token) {
         return m_list.at(token.m_lexeme);
     }
 
+    if(m_enclosing != nullptr) return m_enclosing->get(token);
+
     throw RuntimeError(token, "Undefined variable : " + token.m_lexeme);
 }
 
@@ -18,5 +20,11 @@ std::any Environment::assign(Token token, std::any object) {
         return m_list.at(token.m_lexeme);
     }
 
+    if(m_enclosing != nullptr) return m_enclosing->assign(token, object);
+
     throw RuntimeError(token, "Undefined variable : " + token.m_lexeme);
+}
+
+void Environment::find() {
+    m_enclosing = new Environment();
 }

@@ -18,7 +18,7 @@ void Interpreter::run() {
         std::cout << "panic mode: parser encount error" << std::endl;
         exit(1);
     }
-
+    
     Evaluator evaluator;
     std::any value = evaluator.interpret(stmts);
     if(ErrorReporter::getInstance()->had_runtime_error()) exit(70);

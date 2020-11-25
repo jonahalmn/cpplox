@@ -1,6 +1,6 @@
 // this file has been auto generated
-#ifndef VAR_H
-#define VAR_H
+#ifndef BLOCK_H
+#define BLOCK_H
 #include <iostream>
 #include <any>
 #include <vector>
@@ -8,17 +8,16 @@
 #include "./expression.h"
 #include "./statement.h"
 #include "../lexer/token.h"
-class Var : public Statement {
+class Block : public Statement {
 public:
- Token m_name;
- Expression *m_initializer;
-Var( Token m_name, Expression *m_initializer) : m_name{m_name},m_initializer{m_initializer}{}
+ std::vector<Statement *> *m_statements;
+Block( std::vector<Statement *> *m_statements) : m_statements{m_statements}{}
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };
-virtual Var* clone(){
-return new Var(*this);
+virtual Block* clone(){
+return new Block(*this);
 };
-virtual ~Var(){};
+virtual ~Block(){};
 };
 #endif
