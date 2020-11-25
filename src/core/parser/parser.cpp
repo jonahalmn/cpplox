@@ -5,10 +5,37 @@ std::vector<Statement*> Parser::parse() {
 
     while (!is_at_end())
     {
-        list.push_back(statement());
+        list.push_back(declaration());
     }
 
     return list;
+}
+
+Statement *Parser::declaration() {
+    try {
+        std::vector<TokenType> types{TokenType::VAR};
+        if(match(types)) return varDeclaration();
+        return statement();
+    } catch (ParseError) {
+        sync();
+    }
+
+    return nullptr;
+}
+
+Statement *Parser::varDeclaration() {
+    Token name = consume(TokenType::IDENTIFIER, "Identifier needed");
+
+    Expression *initializer = nullptr;
+    std::vector<TokenType> types{TokenType::EQUAL};
+    if(match(types)) {
+        initializer = expression();
+    }
+
+    consume(TokenType::SEMICOLON, "Expect ;");
+
+    Var *var = new Var{name, initializer};
+    return var;
 }
 
 Statement *Parser::statement() {
@@ -36,15 +63,36 @@ Statement * Parser::expressionStatement() {
     // }
 }
 
-Expression* Parser::expression() {
+Expression* Parser::assigment() {
     Expression* expr = ternary();
+
+    std::vector<TokenType> types{TokenType::EQUAL};
+
+    if(match(types)) {
+        Token equals{previous()};
+        Expression* value = assigment();
+
+        if(dynamic_cast<Variable *>(expr)) {
+            Token name = static_cast<Variable *>(expr)->m_name;
+            Assign *assign = new Assign{name, value};
+            return assign;
+        }
+
+        error(equals, "Invalid assigment target.");
+    }
+
+    return expr;
+}
+
+Expression* Parser::expression() {
+    Expression* expr = assigment();
 
     std::vector<TokenType> types{TokenType::COMMA};
 
     while (match(types))
     {
         Token token_operator{previous()};
-        Expression* right = ternary();
+        Expression* right = assigment();
         Binary *binary = new Binary{expr->clone(), token_operator, right->clone()};
         expr = binary;
     }
@@ -176,6 +224,12 @@ Expression* Parser::primary() {
         consume(TokenType::RIGHT_PAREN, "')' expected");
         Grouping *grouping = new Grouping{ expr->clone() };
         return grouping;
+    }
+
+    std::vector<TokenType> ID{TokenType::IDENTIFIER};
+    if(match(ID)) {
+        Variable *var = new Variable{previous()};
+        return var;
     }
 
     throw error(peek(), "Expect expression.");

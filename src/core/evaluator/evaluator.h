@@ -13,6 +13,11 @@
 #include "../parser/ternary.h"
 #include "../parser/stmtexpression.h"
 #include "../parser/print.h"
+#include "../parser/var.h"
+#include "../parser/variable.h"
+#include "../parser/assign.h"
+
+#include "./environment.h"
 
 #ifndef EVAL_H
 #define EVAL_H
@@ -21,6 +26,8 @@ class Evaluator : public Visitor {
     public:
         bool m_has_runtime_error = false;
         ErrorReporter *m_error_reporter = ErrorReporter::getInstance();
+
+        Environment m_environment{};
 
         std::any interpret(std::vector<Statement *>);
         std::any evaluate(Expression*);
@@ -40,6 +47,10 @@ class Evaluator : public Visitor {
 
         virtual std::any visit(StmtExpression *stmtExpr);
         virtual std::any visit(Print *print);
+
+        virtual std::any visit(Var *var);
+        virtual std::any visit(Variable *variable);
+        virtual std::any visit(Assign *assign);
 
         void checkNumberOperand(Token token, std::any operand);
         void checkNumberOperands(Token token, std::any left, std::any right);

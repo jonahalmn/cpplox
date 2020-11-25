@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "../lexer/token.h"
+#include "./assign.h"
 #include "./expression.h"
 #include "./statement.h"
 #include "./binary.h"
@@ -9,6 +10,8 @@
 #include "./grouping.h"
 #include "./ternary.h"
 #include "./print.h"
+#include "./var.h"
+#include "./variable.h"
 #include "./stmtexpression.h"
 #include "../error/parseError.h"
 #include "../errorReporter.h"
@@ -22,6 +25,7 @@ class Parser {
         ErrorReporter *m_error_reporter = ErrorReporter::getInstance();
 
         Expression* expression();
+        Expression* assigment();
         Expression* ternary();
         Expression* equality();
         Expression* comparison();
@@ -33,6 +37,9 @@ class Parser {
         Statement* statement();
         Statement* printStatement();
         Statement* expressionStatement();
+
+        Statement* declaration();
+        Statement* varDeclaration();
 
         Token advance();
         Token previous();

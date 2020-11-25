@@ -8,6 +8,9 @@ class Grouping;
 class Literal;
 class Unary;
 class Ternary;
+class Variable;
+class Assign;
 class StmtExpression;
 class Print;
+class Var;
 #endif

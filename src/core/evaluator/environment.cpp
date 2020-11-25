@@ -1,0 +1,22 @@
+#include "./environment.h"
+
+void Environment::define(Token token, std::any object) {
+    m_list.insert(std::pair<std::string, std::any>{token.m_lexeme, object});
+}
+
+std::any Environment::get(Token token) {
+    if(m_list.find(token.m_lexeme) != m_list.end()) {
+        return m_list.at(token.m_lexeme);
+    }
+
+    throw RuntimeError(token, "Undefined variable : " + token.m_lexeme);
+}
+
+std::any Environment::assign(Token token, std::any object) {
+    if(m_list.find(token.m_lexeme) != m_list.end()) {
+        m_list.at(token.m_lexeme) = object;
+        return m_list.at(token.m_lexeme);
+    }
+
+    throw RuntimeError(token, "Undefined variable : " + token.m_lexeme);
+}

@@ -19,11 +19,14 @@ int main(int argc, char* argv[]) {
         "Literal  : std::any m_value",
         "Unary    : Token m_operator, Expression *m_right",
         "Ternary  : Expression *m_condition, Expression *m_consequence, Expression *m_alternative",
+        "Variable : Token m_name",
+        "Assign : Token m_name, Expression *m_value"
     };
 
     std::vector<std::string> types_s{
         "StmtExpression : Expression *m_expression",
         "Print : Expression *m_expression",
+        "Var : Token m_name, Expression *m_initializer"
     };
 
     const char* base = "Expression";

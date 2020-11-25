@@ -119,6 +119,25 @@ void Evaluator::checkNumberOperands(Token token, std::any left, std::any right) 
     throw RuntimeError(token, "operands must be numbers");
 }
 
+std::any Evaluator::visit(Var *var) {
+    std::any value = nullptr;
+    if(var->m_initializer != nullptr) {
+        value = evaluate(var->m_initializer);
+    }
+
+    m_environment.define(var->m_name, value);
+    return nullptr;
+}
+
+std::any Evaluator::visit(Variable *variable) {
+    return m_environment.get(variable->m_name);
+}
+
+std::any Evaluator::visit(Assign *assign) {
+    std::any value = evaluate(assign->m_value);
+    return m_environment.assign(assign->m_name, value);
+}
+
 bool Evaluator::isEqual(std::any left, std::any right) {
     if(left.type() == typeid(std::string) && right.type() == typeid(std::string)) {
         return std::any_cast<std::string>(left) == std::any_cast<std::string>(right);
