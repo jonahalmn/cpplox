@@ -6,6 +6,7 @@ void Environment::define(Token token, std::any object) {
 
 std::any Environment::get(Token token) {
     if(m_list.find(token.m_lexeme) != m_list.end()) {
+        if(m_list.at(token.m_lexeme).type() == typeid(nullptr)) throw RuntimeError(token, "Variable defined but not initialized.");
         return m_list.at(token.m_lexeme);
     }
 
@@ -23,8 +24,4 @@ std::any Environment::assign(Token token, std::any object) {
     if(m_enclosing != nullptr) return m_enclosing->assign(token, object);
 
     throw RuntimeError(token, "Undefined variable : " + token.m_lexeme);
-}
-
-void Environment::find() {
-    m_enclosing = new Environment();
 }

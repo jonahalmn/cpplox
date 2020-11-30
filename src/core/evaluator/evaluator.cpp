@@ -144,6 +144,28 @@ std::any Evaluator::visit(Assign *assign) {
     return m_environment->assign(assign->m_name, value);
 }
 
+std::any Evaluator::visit(IfStmt *ifStmt) {
+    if(isTruthy(evaluate(ifStmt->m_condition))) {
+        return execute(ifStmt->m_then);
+    } else if(ifStmt->m_else) {
+        return execute(ifStmt->m_else);
+    }
+
+    return nullptr;
+}
+
+std::any Evaluator::visit(Logical *logical) {
+    std::any left = evaluate(logical->m_left);
+
+    if(logical->m_operator.m_token_type == TokenType::OR) {
+        if(isTruthy(left)) return left;
+    } else {
+        if(!isTruthy(left)) return left;
+    }
+
+    return evaluate(logical->m_right);
+}
+
 bool Evaluator::isEqual(std::any left, std::any right) {
     if(left.type() == typeid(std::string) && right.type() == typeid(std::string)) {
         return std::any_cast<std::string>(left) == std::any_cast<std::string>(right);

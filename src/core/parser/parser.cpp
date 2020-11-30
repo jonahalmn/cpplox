@@ -46,7 +46,25 @@ Statement *Parser::statement() {
     if(match(std::vector<TokenType>{TokenType::LEFT_BRACE}))
         return block();
 
+    if(match(std::vector<TokenType>{TokenType::IF})) {
+        return ifStatement();
+    }
+
     return expressionStatement();
+}
+
+Statement *Parser::ifStatement() {
+    consume(TokenType::LEFT_PAREN, "Condition must start with (");
+    Expression* condition = expression();
+    consume(TokenType::RIGHT_PAREN, "Condition must end with )");
+    Statement* thenBranch = statement();
+    Statement* elseBranch = nullptr;
+
+    if(match(std::vector<TokenType>{TokenType::ELSE})) {
+        elseBranch = statement();
+    }
+
+    return new IfStmt(condition, thenBranch, elseBranch);
 }
 
 Statement *Parser::block() {
@@ -118,20 +136,48 @@ Expression* Parser::expression() {
 }
 
 Expression* Parser::ternary() {
-    Expression* expr = equality();
+    Expression* expr = orExpr();
 
     std::vector<TokenType> types{TokenType::QUESTION_MARK};
 
     while (match(types))
     {
-        Expression* consequence = equality();
+        Expression* consequence = orExpr();
         consume(TokenType::COLON, "Expect ':'");
-        Expression* alternative = equality();
+        Expression* alternative = orExpr();
         Ternary *ternary = new Ternary{expr->clone(), consequence->clone(), alternative->clone()};
         expr = ternary;
     }
 
     return expr;
+}
+
+Expression* Parser::orExpr() {
+    Expression *left = andExpr();
+
+    while (match(std::vector<TokenType> {TokenType::OR}))
+    {
+        Token operator_or = previous();
+        Expression *right = andExpr();
+        return new Logical(left, operator_or, right);
+    }
+
+    return left;
+
+}
+
+Expression* Parser::andExpr() {
+    Expression *left = equality();
+
+    while (match(std::vector<TokenType> {TokenType::AND}))
+    {
+        Token operator_and = previous();
+        Expression *right = equality();
+        return new Logical(left, operator_and, right);
+    }
+
+    return left;
+
 }
 
 Expression* Parser::equality() {

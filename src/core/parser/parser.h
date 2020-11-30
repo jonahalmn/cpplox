@@ -14,6 +14,8 @@
 #include "./variable.h"
 #include "./block.h"
 #include "./stmtexpression.h"
+#include "./ifstmt.h"
+#include "./logical.h"
 #include "../error/parseError.h"
 #include "../errorReporter.h"
 #include <any>
@@ -35,11 +37,16 @@ class Parser {
         Expression* unary();
         Expression* primary();
 
+        Expression* orExpr();
+        Expression* andExpr();
+
         Statement* block();
 
         Statement* statement();
         Statement* printStatement();
         Statement* expressionStatement();
+
+        Statement* ifStatement();
 
         Statement* declaration();
         Statement* varDeclaration();

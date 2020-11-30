@@ -20,14 +20,16 @@ int main(int argc, char* argv[]) {
         "Unary    : Token m_operator, Expression *m_right",
         "Ternary  : Expression *m_condition, Expression *m_consequence, Expression *m_alternative",
         "Variable : Token m_name",
-        "Assign : Token m_name, Expression *m_value"
+        "Assign : Token m_name, Expression *m_value",
+        "Logical : Expression *m_left, Token m_operator, Expression *m_right"
     };
 
     std::vector<std::string> types_s{
         "StmtExpression : Expression *m_expression",
         "Print : Expression *m_expression",
         "Var : Token m_name, Expression *m_initializer",
-        "Block : std::vector<Statement *> *m_statements"
+        "Block : std::vector<Statement *> *m_statements",
+        "IfStmt : Expression* m_condition, Statement *m_then, Statement *m_else",
     };
 
     const char* base = "Expression";

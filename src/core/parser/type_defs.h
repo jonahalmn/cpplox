@@ -10,8 +10,10 @@ class Unary;
 class Ternary;
 class Variable;
 class Assign;
+class Logical;
 class StmtExpression;
 class Print;
 class Var;
 class Block;
+class IfStmt;
 #endif

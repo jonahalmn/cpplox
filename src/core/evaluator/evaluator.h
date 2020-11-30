@@ -17,6 +17,8 @@
 #include "../parser/variable.h"
 #include "../parser/assign.h"
 #include "../parser/block.h"
+#include "../parser/ifstmt.h"
+#include "../parser/logical.h"
 
 #include "./environment.h"
 
@@ -53,6 +55,9 @@ class Evaluator : public Visitor {
         virtual std::any visit(Var *var);
         virtual std::any visit(Variable *variable);
         virtual std::any visit(Assign *assign);
+
+        virtual std::any visit(IfStmt *ifStmt);
+        virtual std::any visit(Logical *logical);
 
         virtual std::any visit(Block *block);
 
