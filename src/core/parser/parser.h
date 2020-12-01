@@ -15,6 +15,7 @@
 #include "./block.h"
 #include "./stmtexpression.h"
 #include "./ifstmt.h"
+#include "./whilestmt.h"
 #include "./logical.h"
 #include "../error/parseError.h"
 #include "../errorReporter.h"
@@ -47,6 +48,7 @@ class Parser {
         Statement* expressionStatement();
 
         Statement* ifStatement();
+        Statement* whileStatement();
 
         Statement* declaration();
         Statement* varDeclaration();

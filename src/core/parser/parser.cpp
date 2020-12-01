@@ -53,6 +53,15 @@ Statement *Parser::statement() {
     return expressionStatement();
 }
 
+Statement *Parser::whileStatement() {
+    consume(TokenType::LEFT_PAREN, "Condition must start with (");
+    Expression* condition = expression();
+    consume(TokenType::RIGHT_PAREN, "Condition must end with )");
+    Statement *body = statement();
+
+    return new WhileStmt{condition, body};
+}
+
 Statement *Parser::ifStatement() {
     consume(TokenType::LEFT_PAREN, "Condition must start with (");
     Expression* condition = expression();

@@ -154,6 +154,14 @@ std::any Evaluator::visit(IfStmt *ifStmt) {
     return nullptr;
 }
 
+std::any Evaluator::visit(WhileStmt *whileStmt) {
+    while(isTruthy(evaluate(whileStmt->m_condition))) {
+        execute(whileStmt->m_body);
+    }
+
+    return nullptr;
+}
+
 std::any Evaluator::visit(Logical *logical) {
     std::any left = evaluate(logical->m_left);
 

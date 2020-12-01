@@ -16,4 +16,5 @@ class Print;
 class Var;
 class Block;
 class IfStmt;
+class WhileStmt;
 #endif

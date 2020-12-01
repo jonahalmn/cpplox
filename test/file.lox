@@ -3,7 +3,5 @@ var a = 1;
     var a = a + 2;
     print a;
 
-    if(a==3) {
-        print "a equals tree";
-    }
+    print true and false;
 }
