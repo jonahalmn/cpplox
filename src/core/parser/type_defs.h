@@ -17,4 +17,5 @@ class Var;
 class Block;
 class IfStmt;
 class WhileStmt;
+class BreakStmt;
 #endif

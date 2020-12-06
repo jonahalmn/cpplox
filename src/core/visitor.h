@@ -18,6 +18,7 @@ virtual std::any visit(Var *var) = 0;
 virtual std::any visit(Block *block) = 0;
 virtual std::any visit(IfStmt *ifstmt) = 0;
 virtual std::any visit(WhileStmt *whilestmt) = 0;
+virtual std::any visit(BreakStmt *breakstmt) = 0;
 virtual ~Visitor(){};
 };
 #endif

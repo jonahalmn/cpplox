@@ -39,6 +39,13 @@ Statement *Parser::varDeclaration() {
     return var;
 }
 
+Statement *Parser::breakStatement() {
+    Token token = previous();
+    consume(TokenType::SEMICOLON, "need ; after break");
+
+    return new BreakStmt{token};
+}
+
 Statement *Parser::statement() {
     if(match(std::vector<TokenType> {TokenType::PRINT}))
         return printStatement();
@@ -50,6 +57,16 @@ Statement *Parser::statement() {
         return ifStatement();
     }
 
+    if(match(std::vector<TokenType>{TokenType::BREAK}) && is_breakable())
+        return breakStatement();
+
+    if(match(std::vector<TokenType>{TokenType::BREAK}))
+        throw error(peek(), "Can't break outside a loop.");
+
+    if(match(std::vector<TokenType>{TokenType::FOR})) {
+        return forStatement();
+    }
+
     return expressionStatement();
 }
 
@@ -57,7 +74,9 @@ Statement *Parser::whileStatement() {
     consume(TokenType::LEFT_PAREN, "Condition must start with (");
     Expression* condition = expression();
     consume(TokenType::RIGHT_PAREN, "Condition must end with )");
+    m_loop_level++;
     Statement *body = statement();
+    m_loop_level--;
 
     return new WhileStmt{condition, body};
 }
@@ -74,6 +93,66 @@ Statement *Parser::ifStatement() {
     }
 
     return new IfStmt(condition, thenBranch, elseBranch);
+}
+
+Statement *Parser::forStatement() {
+    consume(TokenType::LEFT_PAREN, "Condition must start with (");
+
+    Statement *initializer;
+
+    if(match(std::vector<TokenType>{TokenType::SEMICOLON})) {
+        initializer = nullptr;
+    } else if(match(std::vector<TokenType>{TokenType::VAR})) {
+        initializer = varDeclaration();
+    } else {
+        initializer = expressionStatement();
+    }
+
+    Expression *condition = nullptr;
+
+    if(!check(TokenType::SEMICOLON)) {
+        condition = expression();
+    }
+
+    consume(TokenType::SEMICOLON, "need semicolon after condition");
+
+
+    Expression *increment = nullptr;
+
+    if(!check(TokenType::RIGHT_PAREN)) {
+        increment = expression();
+    }
+
+    consume(TokenType::RIGHT_PAREN, "expected closing parenthesis");
+
+    m_loop_level++;
+
+    Statement *body = statement();
+
+    if(increment != nullptr) {
+        body = new Block{
+            new std::vector<Statement *>{
+                body->clone(),
+                new StmtExpression( increment )
+            }
+        };
+    }
+
+    if(condition == nullptr) condition = new Literal(false);
+    body = new WhileStmt(condition, body);
+
+    if(initializer != nullptr) {
+        body = new Block{
+            new std::vector<Statement *>{
+                initializer,
+                body->clone()
+            }
+        };
+    }
+
+    m_loop_level--;
+
+    return body;
 }
 
 Statement *Parser::block() {
@@ -319,6 +398,10 @@ bool Parser::match(std::vector<TokenType> types) {
     }
 
     return false;
+}
+
+bool Parser::is_breakable() {
+    return m_loop_level != 0;
 }
 
 Token Parser::previous() {

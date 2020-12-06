@@ -30,7 +30,8 @@ int main(int argc, char* argv[]) {
         "Var : Token m_name, Expression *m_initializer",
         "Block : std::vector<Statement *> *m_statements",
         "IfStmt : Expression* m_condition, Statement *m_then, Statement *m_else",
-        "WhileStmt : Expression *m_condition, Statement *m_body"
+        "WhileStmt : Expression *m_condition, Statement *m_body",
+        "BreakStmt : Token m_token"
     };
 
     const char* base = "Expression";

@@ -5,3 +5,17 @@ var a = 1;
 
     print true and false;
 }
+
+for(var i = 0; i < 5; i = i + 1) {
+    print i;
+}
+
+var temp = 0;
+for (var b = 1; a < 10000; b = temp + b) {
+  print a;
+  temp = a;
+  a = b;
+  if(a > 20) {
+      break;
+  }
+}

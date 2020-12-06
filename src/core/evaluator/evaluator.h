@@ -2,6 +2,7 @@
 #include <any>
 #include <string>
 #include <vector>
+#include "../../helpers/helpers.h"
 #include "../error/runtimeError.h"
 #include "../errorReporter.h"
 #include "../visitor.h"
@@ -20,6 +21,7 @@
 #include "../parser/ifstmt.h"
 #include "../parser/logical.h"
 #include "../parser/whilestmt.h"
+#include "../parser/breakstmt.h"
 
 #include "./environment.h"
 
@@ -60,6 +62,7 @@ class Evaluator : public Visitor {
         virtual std::any visit(IfStmt *ifStmt);
         virtual std::any visit(WhileStmt *whileStmt);
         virtual std::any visit(Logical *logical);
+        virtual std::any visit(BreakStmt *breakstmt);
 
         virtual std::any visit(Block *block);
 

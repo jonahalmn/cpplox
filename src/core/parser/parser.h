@@ -17,6 +17,7 @@
 #include "./ifstmt.h"
 #include "./whilestmt.h"
 #include "./logical.h"
+#include "./breakstmt.h"
 #include "../error/parseError.h"
 #include "../errorReporter.h"
 #include <any>
@@ -27,6 +28,7 @@ class Parser {
         unsigned int m_current = 0;
         std::vector<Token> m_tokens;
         ErrorReporter *m_error_reporter = ErrorReporter::getInstance();
+        int m_loop_level = 0;
 
         Expression* expression();
         Expression* assigment();
@@ -49,6 +51,8 @@ class Parser {
 
         Statement* ifStatement();
         Statement* whileStatement();
+        Statement* forStatement();
+        Statement* breakStatement();
 
         Statement* declaration();
         Statement* varDeclaration();
@@ -62,6 +66,7 @@ class Parser {
         bool match(std::vector<TokenType>);
         bool is_at_end();
         void sync();
+        bool is_breakable();
 
         ParseError error(Token, std::string);
 

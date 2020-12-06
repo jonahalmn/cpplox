@@ -8,6 +8,10 @@ std::any Evaluator::visit(Grouping *grouping) {
     return evaluate(grouping->m_expression);
 }
 
+std::any Evaluator::visit(BreakStmt *breakstmt) {
+    throw new BreakStmt(breakstmt->m_token);
+}
+
 std::any Evaluator::visit(Unary *unary) {
     std::any right = evaluate(unary->m_right);
 
@@ -155,8 +159,12 @@ std::any Evaluator::visit(IfStmt *ifStmt) {
 }
 
 std::any Evaluator::visit(WhileStmt *whileStmt) {
-    while(isTruthy(evaluate(whileStmt->m_condition))) {
-        execute(whileStmt->m_body);
+    try {
+        while(isTruthy(evaluate(whileStmt->m_condition))) {
+            execute(whileStmt->m_body);
+        }
+    } catch(BreakStmt *e) {
+        return nullptr;
     }
 
     return nullptr;
@@ -217,6 +225,10 @@ void Evaluator::runtimeError(RuntimeError e) {
 std::string Evaluator::stringify(std::any value) {
     if(!value.has_value()) return "null";
 
+    if(value.type() == typeid(double) && is_int(std::any_cast<double>(value))) {
+        return std::to_string((int) std::any_cast<double>(value));
+    }
+
     if(value.type() == typeid(double)) {
         return std::to_string(std::any_cast<double>(value));
     }
@@ -249,7 +261,8 @@ std::any Evaluator::executeBlock(Block *block, Environment *environment) {
         for(Statement *stmt : *block->m_statements) {
             execute(stmt);
         }
-    } catch(RuntimeError e) {
+    }
+    catch(RuntimeError e) {
         m_environment = prev;
         runtimeError(e);
         return nullptr;
