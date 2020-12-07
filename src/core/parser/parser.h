@@ -18,8 +18,10 @@
 #include "./whilestmt.h"
 #include "./logical.h"
 #include "./breakstmt.h"
+#include "./call.h"
 #include "../error/parseError.h"
 #include "../errorReporter.h"
+#include "./function.h"
 #include <any>
 #include <cstdlib>
 
@@ -38,12 +40,16 @@ class Parser {
         Expression* term();
         Expression* factor();
         Expression* unary();
+        Expression* call();
         Expression* primary();
+
+        Expression* finishCall(Expression *);
 
         Expression* orExpr();
         Expression* andExpr();
 
         Statement* block();
+        Statement* function(std::string);
 
         Statement* statement();
         Statement* printStatement();

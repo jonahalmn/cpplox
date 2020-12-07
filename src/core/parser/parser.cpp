@@ -15,6 +15,7 @@ Statement *Parser::declaration() {
     try {
         std::vector<TokenType> types{TokenType::VAR};
         if(match(types)) return varDeclaration();
+        if(match(std::vector<TokenType>{TokenType::FUN})) return function("function");
         return statement();
     } catch (ParseError) {
         sync();
@@ -37,6 +38,29 @@ Statement *Parser::varDeclaration() {
 
     Var *var = new Var{name, initializer};
     return var;
+}
+
+Statement *Parser::function(std::string kind) {
+    Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name");
+
+    consume(TokenType::LEFT_PAREN, "Expect ( after " + kind + " name");
+    std::vector<Token> parameters{};
+
+    if(!check(TokenType::RIGHT_PAREN)) {
+        do {
+            if(parameters.size() >= 255) {
+                error(peek(), "Can't have more than 255 params");
+            }
+
+            parameters.push_back(consume(TokenType::IDENTIFIER, "Parameter needed"));
+        } while(match(std::vector<TokenType>{TokenType::COMMA}));
+    }
+
+    consume(TokenType::RIGHT_PAREN, "Expect ) after params list");
+
+    consume(TokenType::LEFT_BRACE, "Expect { before " + kind + " body");
+    Block *body = static_cast<Block *>(block());
+    return new Function{name, parameters, body};
 }
 
 Statement *Parser::breakStatement() {
@@ -340,7 +364,41 @@ Expression* Parser::unary() {
         return unary;
     }
 
-    return primary();
+    return call();
+}
+
+Expression* Parser::call() {
+    Expression *expr = primary();
+
+    while (true)
+    {
+        if(match(std::vector<TokenType>{TokenType::LEFT_PAREN})) {
+            expr = finishCall(expr);
+        } else {
+            break;
+        }
+    }
+
+    return expr;
+}
+
+Expression* Parser::finishCall(Expression *expr) {
+    std::vector<Expression *> arguments{};
+
+    if(!check(TokenType::RIGHT_PAREN)) {
+        do {
+            std::cout << peek() << std::endl;
+            arguments.push_back(assigment());
+        } while(match(std::vector<TokenType>{TokenType::COMMA}));
+    }
+
+    if(arguments.size() > 255) {
+        error(peek(), "can't pass more than 255 arguments to functions.");
+    }
+
+    Token paren = consume(TokenType::RIGHT_PAREN, "Need ) after argument list");
+
+    return new Call{expr, paren, arguments};
 }
 
 Expression* Parser::primary() {

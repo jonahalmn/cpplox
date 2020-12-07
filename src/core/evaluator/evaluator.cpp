@@ -1,5 +1,9 @@
 #include "./evaluator.h"
 
+Evaluator::Evaluator() {
+    m_global->define(Token{TokenType::IDENTIFIER, "clock", 0}, Clock{});
+}
+
 std::any Evaluator::visit(Literal *literal) {
     return literal->m_value;
 }
@@ -86,7 +90,7 @@ std::any Evaluator::visit(Binary *binary) {
         return isEqual(left, right);
         break;
     default:
-        throw RuntimeError(binary->m_operator, "couldnt understand operator");
+        throw RuntimeError(binary->m_operator, "couldn't understand operator");
         return 1;
         break;
     }
@@ -167,6 +171,36 @@ std::any Evaluator::visit(WhileStmt *whileStmt) {
         return nullptr;
     }
 
+    return nullptr;
+}
+
+std::any Evaluator::visit(Call *call) {
+    std::any callee = evaluate(call->m_callee);
+
+    std::vector<std::any> arguments{};
+    for(Expression *argument : call->m_arguments) {
+        arguments.push_back(evaluate(argument));
+    }
+    LoxCallable *functionCallable;
+    try {
+        functionCallable = std::any_cast<LoxCallable *>(callee);
+    } catch (const std::bad_any_cast& e) {
+        throw RuntimeError(call->m_parenthesis, "Expected to be callable");
+    }
+
+    //  = std::any_cast<LoxCallable *>(callee);
+
+    if(arguments.size() != functionCallable->arity()) {
+        std::ostringstream stream;
+        stream << "Expected " << functionCallable->arity() << " arguments but " << arguments.size() << " present";
+        throw RuntimeError(call->m_parenthesis, stream.str());
+    }
+    return functionCallable->call(this, arguments);
+}
+
+std::any Evaluator::visit(Function *func) {
+    LoxCallable *function = new LoxFunction{func};
+    m_environment->define(func->m_name, function);
     return nullptr;
 }
 

@@ -11,6 +11,7 @@ class Ternary;
 class Variable;
 class Assign;
 class Logical;
+class Call;
 class StmtExpression;
 class Print;
 class Var;
@@ -18,4 +19,5 @@ class Block;
 class IfStmt;
 class WhileStmt;
 class BreakStmt;
+class Function;
 #endif

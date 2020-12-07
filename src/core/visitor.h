@@ -12,6 +12,7 @@ virtual std::any visit(Ternary *ternary) = 0;
 virtual std::any visit(Variable *variable) = 0;
 virtual std::any visit(Assign *assign) = 0;
 virtual std::any visit(Logical *logical) = 0;
+virtual std::any visit(Call *call) = 0;
 virtual std::any visit(StmtExpression *stmtexpression) = 0;
 virtual std::any visit(Print *print) = 0;
 virtual std::any visit(Var *var) = 0;
@@ -19,6 +20,7 @@ virtual std::any visit(Block *block) = 0;
 virtual std::any visit(IfStmt *ifstmt) = 0;
 virtual std::any visit(WhileStmt *whilestmt) = 0;
 virtual std::any visit(BreakStmt *breakstmt) = 0;
+virtual std::any visit(Function *function) = 0;
 virtual ~Visitor(){};
 };
 #endif

@@ -21,7 +21,8 @@ int main(int argc, char* argv[]) {
         "Ternary  : Expression *m_condition, Expression *m_consequence, Expression *m_alternative",
         "Variable : Token m_name",
         "Assign : Token m_name, Expression *m_value",
-        "Logical : Expression *m_left, Token m_operator, Expression *m_right"
+        "Logical : Expression *m_left, Token m_operator, Expression *m_right",
+        "Call : Expression *m_callee, Token m_parenthesis, std::vector<Expression *> m_arguments"
     };
 
     std::vector<std::string> types_s{
@@ -31,7 +32,8 @@ int main(int argc, char* argv[]) {
         "Block : std::vector<Statement *> *m_statements",
         "IfStmt : Expression* m_condition, Statement *m_then, Statement *m_else",
         "WhileStmt : Expression *m_condition, Statement *m_body",
-        "BreakStmt : Token m_token"
+        "BreakStmt : Token m_token",
+        "Function : Token m_name, std::vector<Token> m_params, Block *m_body"
     };
 
     const char* base = "Expression";
