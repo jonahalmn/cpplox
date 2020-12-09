@@ -26,6 +26,7 @@
 #include "../parser/breakstmt.h"
 #include "../parser/call.h"
 #include "../parser/function.h"
+#include "../parser/returnstmt.h"
 #include "./loxFunction.h"
 
 
@@ -33,6 +34,7 @@
 #include "./loxCallable.h"
 #include "./loxFunction.h"
 #include "./clock.h"
+#include "./returnExeption.h"
 
 #ifndef EVAL_H
 #define EVAL_H
@@ -79,6 +81,8 @@ class Evaluator : public Visitor {
         virtual std::any visit(Call *call);
 
         virtual std::any visit(Function *func);
+
+        virtual std::any visit(ReturnStmt *returnStmt);
 
         virtual std::any visit(Block *block);
 

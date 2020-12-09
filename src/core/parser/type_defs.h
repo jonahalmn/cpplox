@@ -20,4 +20,5 @@ class IfStmt;
 class WhileStmt;
 class BreakStmt;
 class Function;
+class ReturnStmt;
 #endif

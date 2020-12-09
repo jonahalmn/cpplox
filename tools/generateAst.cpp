@@ -33,7 +33,8 @@ int main(int argc, char* argv[]) {
         "IfStmt : Expression* m_condition, Statement *m_then, Statement *m_else",
         "WhileStmt : Expression *m_condition, Statement *m_body",
         "BreakStmt : Token m_token",
-        "Function : Token m_name, std::vector<Token> m_params, Block *m_body"
+        "Function : Token m_name, std::vector<Token> m_params, Block *m_body",
+        "ReturnStmt: Token m_keyword, Expression *m_value"
     };
 
     const char* base = "Expression";

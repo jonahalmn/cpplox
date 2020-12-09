@@ -91,7 +91,22 @@ Statement *Parser::statement() {
         return forStatement();
     }
 
+    if(match(std::vector<TokenType>{TokenType::RETURN}))
+        return returnStatement();
+
     return expressionStatement();
+}
+
+Statement *Parser::returnStatement() {
+    Token keyword = previous();
+    Expression* to_return = nullptr;
+    if(!check(TokenType::SEMICOLON)) {
+        to_return = expression();
+    }
+
+    consume(TokenType::SEMICOLON, "Expect ; after return value");
+
+    return new ReturnStmt{keyword, to_return};
 }
 
 Statement *Parser::whileStatement() {

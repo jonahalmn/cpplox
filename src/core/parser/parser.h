@@ -22,6 +22,7 @@
 #include "../error/parseError.h"
 #include "../errorReporter.h"
 #include "./function.h"
+#include "./returnstmt.h"
 #include <any>
 #include <cstdlib>
 
@@ -59,6 +60,7 @@ class Parser {
         Statement* whileStatement();
         Statement* forStatement();
         Statement* breakStatement();
+        Statement* returnStatement();
 
         Statement* declaration();
         Statement* varDeclaration();

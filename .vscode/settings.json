@@ -63,6 +63,7 @@
         "vector": "cpp",
         "any": "cpp",
         "__functional_base_03": "cpp",
-        "__memory": "cpp"
+        "__memory": "cpp",
+        "stack": "cpp"
     }
 }

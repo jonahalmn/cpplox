@@ -21,6 +21,7 @@ virtual std::any visit(IfStmt *ifstmt) = 0;
 virtual std::any visit(WhileStmt *whilestmt) = 0;
 virtual std::any visit(BreakStmt *breakstmt) = 0;
 virtual std::any visit(Function *function) = 0;
+virtual std::any visit(ReturnStmt *returnstmt) = 0;
 virtual ~Visitor(){};
 };
 #endif

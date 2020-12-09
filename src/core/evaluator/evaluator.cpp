@@ -1,7 +1,8 @@
 #include "./evaluator.h"
 
 Evaluator::Evaluator() {
-    m_global->define(Token{TokenType::IDENTIFIER, "clock", 0}, Clock{});
+    LoxCallable *clockFun = new Clock{};
+    m_global->define(Token{TokenType::IDENTIFIER, "clock", 0}, clockFun);
 }
 
 std::any Evaluator::visit(Literal *literal) {
@@ -33,6 +34,12 @@ std::any Evaluator::visit(Unary *unary) {
     }
 
     return NULL;
+}
+
+std::any Evaluator::visit(ReturnStmt *returnStmt) {
+    std::any value = nullptr;
+    if(returnStmt->m_value != nullptr) value = evaluate(returnStmt->m_value);
+    throw new ReturnExeption{value};
 }
 
 std::any Evaluator::visit(Binary *binary) {
@@ -188,8 +195,6 @@ std::any Evaluator::visit(Call *call) {
         throw RuntimeError(call->m_parenthesis, "Expected to be callable");
     }
 
-    //  = std::any_cast<LoxCallable *>(callee);
-
     if(arguments.size() != functionCallable->arity()) {
         std::ostringstream stream;
         stream << "Expected " << functionCallable->arity() << " arguments but " << arguments.size() << " present";
@@ -199,7 +204,7 @@ std::any Evaluator::visit(Call *call) {
 }
 
 std::any Evaluator::visit(Function *func) {
-    LoxCallable *function = new LoxFunction{func};
+    LoxCallable *function = new LoxFunction{func, new Environment{m_environment}};
     m_environment->define(func->m_name, function);
     return nullptr;
 }
