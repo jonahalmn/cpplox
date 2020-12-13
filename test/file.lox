@@ -1,36 +1,10 @@
-var a = 1;
-{
-    var a = a + 2;
-    print a;
-
-    print true and false;
-}
-
-for(var i = 0; i < 5; i = i + 1) {
-    print i;
-}
-
-var temp = 0;
-for (var b = 1; a < 10000; b = temp + b) {
-  print a;
-  temp = a;
-  a = b;
-  if(a > 20) {
-      break;
+class Cake {
+  taste() {
+    var adjective = "delicious";
+    print "The " + this.flavor + " cake is " + adjective + "!";
   }
 }
 
-fun count(n) {
-    if(n > 1) count(n - 1);
-    print n;
-}
-
-count(3);
-
-fun add(a, b, c) {
-  return a + b + c;
-}
-
-print add(1, 2, 3);
-
-print clock();
+var cake = Cake();
+cake.flavor = "German chocolate";
+cake.taste(); // Prints "The German chocolate cake is delicious!".

@@ -16,6 +16,7 @@ Statement *Parser::declaration() {
         std::vector<TokenType> types{TokenType::VAR};
         if(match(types)) return varDeclaration();
         if(match(std::vector<TokenType>{TokenType::FUN})) return function("function");
+        if(match(std::vector<TokenType>{TokenType::CLASS})) return classDeclaration();
         return statement();
     } catch (ParseError) {
         sync();
@@ -23,6 +24,22 @@ Statement *Parser::declaration() {
 
     std::cout << "kill all" << std::endl;
     exit(70);
+}
+
+Statement *Parser::classDeclaration() {
+    Token name = consume(TokenType::IDENTIFIER, "need class identifier");
+    consume(TokenType::LEFT_BRACE, "need { after class declaration");
+
+    std::vector<Function *> methods{};
+
+    while (!check(TokenType::RIGHT_BRACE) && !is_at_end())
+    {
+        methods.push_back(static_cast<Function *>(function("method")));
+    }
+
+    consume(TokenType::RIGHT_BRACE, "expect } at end of class");
+
+    return new ClassDecl{name, methods};
 }
 
 Statement *Parser::varDeclaration() {
@@ -234,10 +251,12 @@ Expression* Parser::assigment() {
         Token equals{previous()};
         Expression* value = assigment();
 
-        if(dynamic_cast<Variable *>(expr)) {
-            Token name = static_cast<Variable *>(expr)->m_name;
+        if(Variable *variable = dynamic_cast<Variable *>(expr)) {
+            Token name = variable->m_name;
             Assign *assign = new Assign{name, value};
             return assign;
+        } else if (Get *get = dynamic_cast<Get *>(expr)){
+            return new Set{get->m_object, get->m_name, value};
         }
 
         error(equals, "Invalid assigment target.");
@@ -389,6 +408,9 @@ Expression* Parser::call() {
     {
         if(match(std::vector<TokenType>{TokenType::LEFT_PAREN})) {
             expr = finishCall(expr);
+        } else if(match(std::vector<TokenType>{TokenType::DOT})) {
+            Token name = consume(TokenType::IDENTIFIER, "expect property name after '.'");
+            expr = new Get{expr, name};
         } else {
             break;
         }
@@ -402,7 +424,6 @@ Expression* Parser::finishCall(Expression *expr) {
 
     if(!check(TokenType::RIGHT_PAREN)) {
         do {
-            std::cout << peek() << std::endl;
             arguments.push_back(assigment());
         } while(match(std::vector<TokenType>{TokenType::COMMA}));
     }
@@ -454,6 +475,10 @@ Expression* Parser::primary() {
     if(match(ID)) {
         Variable *var = new Variable{previous()};
         return var;
+    }
+
+    if(match(std::vector<TokenType>{TokenType::THIS})) {
+        return new ThisExpr{previous()};
     }
 
     throw error(peek(), "Expect expression.");

@@ -13,6 +13,22 @@ std::any Environment::get(Token token) {
     if(m_enclosing != nullptr) return m_enclosing->get(token);
 
     throw RuntimeError(token, "Undefined variable : " + token.m_lexeme);
+    return nullptr;
+}
+
+
+std::any Environment::get_at(int distance, std::string name) {
+    return ancestor(distance)->m_list.at(name);
+}
+
+Environment *Environment::ancestor(int depth) {
+    Environment *env = this;
+    for (int i = 0; i < depth; i++)
+    {
+       env = env->m_enclosing;
+    }
+
+    return env;
 }
 
 std::any Environment::assign(Token token, std::any object) {
@@ -24,4 +40,8 @@ std::any Environment::assign(Token token, std::any object) {
     if(m_enclosing != nullptr) return m_enclosing->assign(token, object);
 
     throw RuntimeError(token, "Undefined variable : " + token.m_lexeme);
+}
+
+std::any Environment::assign_at(int depth, Token token, std::any object) {
+    return ancestor(depth)->m_list[token.m_lexeme] = object;
 }

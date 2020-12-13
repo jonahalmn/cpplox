@@ -8,6 +8,7 @@
 #include "./errorReporter.h"
 #include "./parser/astPrinter.h"
 #include "./evaluator/evaluator.h"
+#include "./parser/resolver.h"
 
 
 #ifndef INTERPRETER_H

@@ -21,6 +21,18 @@ class Token {
 
         friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
+        bool operator==(const Token& token) {
+            if(m_lexeme == token.m_lexeme && m_token_type == token.m_token_type) {
+                return true;
+            }
+
+            return false;
+        }
+
+        inline bool operator< (const Token& token) const { 
+            return m_lexeme > token.m_lexeme;
+        }
+
 };
 
 #endif

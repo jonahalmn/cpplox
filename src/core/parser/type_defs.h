@@ -12,6 +12,9 @@ class Variable;
 class Assign;
 class Logical;
 class Call;
+class Get;
+class Set;
+class ThisExpr;
 class StmtExpression;
 class Print;
 class Var;
@@ -20,5 +23,6 @@ class IfStmt;
 class WhileStmt;
 class BreakStmt;
 class Function;
+class ClassDecl;
 class ReturnStmt;
 #endif

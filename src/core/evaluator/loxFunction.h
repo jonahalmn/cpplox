@@ -18,6 +18,7 @@ class LoxFunction : public LoxCallable {
         LoxFunction(Function *declaration, Environment *closure) : m_declaration{declaration}, m_closure{closure} {};
         virtual unsigned int arity();
         virtual std::any call(Evaluator *evaluator, std::vector<std::any> arguments);
+        virtual LoxFunction *bind(LoxInstance *);
         virtual ~LoxFunction(){};
 };
 

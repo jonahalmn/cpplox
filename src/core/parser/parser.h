@@ -23,6 +23,10 @@
 #include "../errorReporter.h"
 #include "./function.h"
 #include "./returnstmt.h"
+#include "./classdecl.h"
+#include "./get.h"
+#include "./set.h"
+#include "./thisexpr.h"
 #include <any>
 #include <cstdlib>
 
@@ -64,6 +68,7 @@ class Parser {
 
         Statement* declaration();
         Statement* varDeclaration();
+        Statement* classDeclaration();
 
         Token advance();
         Token previous();

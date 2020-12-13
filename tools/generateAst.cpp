@@ -22,7 +22,10 @@ int main(int argc, char* argv[]) {
         "Variable : Token m_name",
         "Assign : Token m_name, Expression *m_value",
         "Logical : Expression *m_left, Token m_operator, Expression *m_right",
-        "Call : Expression *m_callee, Token m_parenthesis, std::vector<Expression *> m_arguments"
+        "Call : Expression *m_callee, Token m_parenthesis, std::vector<Expression *> m_arguments",
+        "Get : Expression *m_object, Token m_name",
+        "Set : Expression *m_object, Token m_name, Expression *m_value",
+        "ThisExpr : Token m_keyword"
     };
 
     std::vector<std::string> types_s{
@@ -34,6 +37,7 @@ int main(int argc, char* argv[]) {
         "WhileStmt : Expression *m_condition, Statement *m_body",
         "BreakStmt : Token m_token",
         "Function : Token m_name, std::vector<Token> m_params, Block *m_body",
+        "ClassDecl : Token m_name, std::vector<Function *> m_methods",
         "ReturnStmt: Token m_keyword, Expression *m_value"
     };
 

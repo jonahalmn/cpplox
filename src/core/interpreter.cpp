@@ -18,8 +18,14 @@ void Interpreter::run() {
         std::cout << "panic mode: parser encount error" << std::endl;
         exit(1);
     }
-    
+
     Evaluator evaluator;
+    Resolver resolver{&evaluator};
+    resolver.resolve(stmts);
+    if(ErrorReporter::getInstance()->had_error()) {
+        std::cout << "Error during resolving, abort" << std::endl;
+        exit(2);
+    }
     std::any value = evaluator.interpret(stmts);
     if(ErrorReporter::getInstance()->had_runtime_error()) exit(70);
     // std::cout << evaluator.stringify(value) << std::endl;

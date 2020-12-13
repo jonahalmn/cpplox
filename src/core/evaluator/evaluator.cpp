@@ -5,6 +5,11 @@ Evaluator::Evaluator() {
     m_global->define(Token{TokenType::IDENTIFIER, "clock", 0}, clockFun);
 }
 
+void Evaluator::resolve(Expression *expr, int depth) {
+    m_locals[expr] = depth;
+    return;
+}
+
 std::any Evaluator::visit(Literal *literal) {
     return literal->m_value;
 }
@@ -40,6 +45,33 @@ std::any Evaluator::visit(ReturnStmt *returnStmt) {
     std::any value = nullptr;
     if(returnStmt->m_value != nullptr) value = evaluate(returnStmt->m_value);
     throw new ReturnExeption{value};
+}
+
+std::any Evaluator::visit(Get *get) {
+    std::any object = evaluate(get->m_object);
+    try {
+        LoxInstance* instance = std::any_cast<LoxInstance *>(object);
+        return instance->get(get->m_name);
+    } catch(std::bad_any_cast e) {
+        m_error_reporter->error(RuntimeError{get->m_name, "trying to access property of non-object"});
+    }
+
+    return nullptr;
+}
+
+std::any Evaluator::visit(Set *set) {
+    std::any object = evaluate(set->m_object);
+    LoxInstance *object_instance;
+
+    try {
+        object_instance = std::any_cast<LoxInstance *>(object);
+    } catch(std::bad_any_cast e) {
+        throw RuntimeError{set->m_name, "trying to access field of no-object"};
+    }
+
+    std::any value = evaluate(set->m_value);
+    object_instance->set(set->m_name, value);
+    return value;
 }
 
 std::any Evaluator::visit(Binary *binary) {
@@ -144,8 +176,38 @@ std::any Evaluator::visit(Var *var) {
     return nullptr;
 }
 
+std::any Evaluator::visit(ClassDecl *classdecl) {
+    m_environment->define(classdecl->m_name, nullptr);
+
+    std::map<std::string, LoxCallable *> methods {};
+
+    for (Function *method : classdecl->m_methods)
+    {
+        LoxCallable *function = new LoxFunction{method, m_environment};
+        methods[method->m_name.m_lexeme] = function;
+    }
+
+    LoxCallable *klass = new LoxClass{classdecl->m_name, methods};
+    m_environment->assign(classdecl->m_name, klass);
+
+    return nullptr;
+}
+
+std::any Evaluator::visit(ThisExpr *thisExpr) {
+    return lookup_variable(thisExpr->m_keyword, thisExpr);
+}
+
+std::any Evaluator::lookup_variable(Token token, Expression *expr) {
+    if(m_locals.find(expr) != m_locals.end()) {
+        int distance = m_locals.at(expr);
+        return m_environment->get_at(distance, token.m_lexeme);
+    } else {
+        return m_global->get(token);
+    }
+}
+
 std::any Evaluator::visit(Variable *variable) {
-    return m_environment->get(variable->m_name);
+    return lookup_variable(variable->m_name, variable);
 }
 
 std::any Evaluator::visit(Block *block) {
@@ -156,7 +218,15 @@ std::any Evaluator::visit(Block *block) {
 
 std::any Evaluator::visit(Assign *assign) {
     std::any value = evaluate(assign->m_value);
-    return m_environment->assign(assign->m_name, value);
+
+    if(m_locals.find(assign) != m_locals.end()) {
+        int distance = m_locals.at(assign);
+        return m_environment->assign_at(distance, assign->m_name, value);
+    } else {
+        return m_global->assign(assign->m_name, value);
+    }
+
+    return value;
 }
 
 std::any Evaluator::visit(IfStmt *ifStmt) {
@@ -204,7 +274,7 @@ std::any Evaluator::visit(Call *call) {
 }
 
 std::any Evaluator::visit(Function *func) {
-    LoxCallable *function = new LoxFunction{func, new Environment{m_environment}};
+    LoxCallable *function = new LoxFunction{func, m_environment};
     m_environment->define(func->m_name, function);
     return nullptr;
 }
