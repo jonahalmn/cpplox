@@ -51,11 +51,11 @@ std::any Evaluator::visit(Get *get) {
     std::any object = evaluate(get->m_object);
 
     try {
-        if(object.type() == typeid(LoxCallable *)) {
-            LoxClass* instance = (LoxClass *) std::any_cast<LoxCallable *>(object);
-            return instance->get(get->m_name);
-        } else {
+        if(object.type() == typeid(LoxInstance *)) {
             LoxInstance* instance = std::any_cast<LoxInstance *>(object);
+            return instance->get(get->m_name, this);
+        } else {
+            LoxClass* instance = (LoxClass *) std::any_cast<LoxCallable *>(object);
             return instance->get(get->m_name);
         }
     } catch(std::bad_any_cast e) {
@@ -191,6 +191,7 @@ std::any Evaluator::visit(ClassDecl *classdecl) {
 
     std::map<std::string, LoxCallable *> methods {};
     std::map<std::string, LoxCallable *> statics {};
+    std::map<std::string, LoxCallable *> getters {};
 
     for (Function *method : classdecl->m_methods)
     {
@@ -204,7 +205,13 @@ std::any Evaluator::visit(ClassDecl *classdecl) {
         statics[stat->m_name.m_lexeme] = function;
     }
 
-    LoxCallable *klass = new LoxClass{classdecl->m_name, methods, statics};
+    for (Function *get : classdecl->m_getters)
+    {
+        LoxCallable *function = new LoxFunction{get, m_environment, false};
+        getters[get->m_name.m_lexeme] = function;
+    }
+
+    LoxCallable *klass = new LoxClass{classdecl->m_name, methods, statics, getters};
     m_environment->assign(classdecl->m_name, klass);
 
     return nullptr;

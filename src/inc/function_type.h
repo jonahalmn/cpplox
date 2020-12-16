@@ -5,6 +5,7 @@ enum class FunctionType {
     FUNCTION,
     METHOD,
     STATIC,
+    GETTER,
     INITIALIZER,
     NONE
 };

@@ -6,7 +6,8 @@ std::any LoxClass::call(Evaluator *evaluator, std::vector<std::any> args) {
     LoxInstance *instance = new LoxInstance{this};
     LoxCallable *initializer = findMethod("init");
     if(initializer) {
-        ((LoxFunction *) initializer)->bind(instance)->call(evaluator, args);
+        LoxFunction *funct = ((LoxFunction *) initializer)->bind(instance);
+        funct->call(evaluator, args);
     }
 
     return instance;
@@ -22,6 +23,13 @@ unsigned int LoxClass::arity() {
 LoxCallable *LoxClass::findMethod(std::string name) {
     if(m_methods.find(name) != m_methods.end())
         return m_methods.at(name);
+
+    return nullptr;
+}
+
+LoxCallable *LoxClass::findGetter(std::string name) {
+    if(m_getters.find(name) != m_getters.end())
+        return m_getters.at(name);
 
     return nullptr;
 }

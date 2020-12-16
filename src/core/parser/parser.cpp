@@ -32,19 +32,24 @@ Statement *Parser::classDeclaration() {
 
     std::vector<Function *> methods{};
     std::vector<Function *> statics{};
+    std::vector<Function *> getters{};
 
     while (!check(TokenType::RIGHT_BRACE) && !is_at_end())
     {
         if(match(std::vector<TokenType>{TokenType::CLASS})) {
             statics.push_back(static_cast<Function *>(function("static method")));
         } else {
-            methods.push_back(static_cast<Function *>(function("method")));
+            try {
+                methods.push_back(static_cast<Function *>(function("method")));
+            } catch(GetterException e) {
+                getters.push_back(static_cast<Function *>(function("getter")));
+            }
         }
     }
 
     consume(TokenType::RIGHT_BRACE, "expect } at end of class");
 
-    return new ClassDecl{name, methods, statics};
+    return new ClassDecl{name, methods, statics, getters};
 }
 
 Statement *Parser::varDeclaration() {
@@ -63,22 +68,30 @@ Statement *Parser::varDeclaration() {
 }
 
 Statement *Parser::function(std::string kind) {
-    Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name");
-
-    consume(TokenType::LEFT_PAREN, "Expect ( after " + kind + " name");
-    std::vector<Token> parameters{};
-
-    if(!check(TokenType::RIGHT_PAREN)) {
-        do {
-            if(parameters.size() >= 255) {
-                error(peek(), "Can't have more than 255 params");
-            }
-
-            parameters.push_back(consume(TokenType::IDENTIFIER, "Parameter needed"));
-        } while(match(std::vector<TokenType>{TokenType::COMMA}));
+    Token name;
+    if(kind != "getter") {
+        name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name");
+    } else {
+        name = previous();
     }
 
-    consume(TokenType::RIGHT_PAREN, "Expect ) after params list");
+    if(kind == "method" && check(TokenType::LEFT_BRACE)) throw GetterException();
+    std::vector<Token> parameters{};
+    if(kind != "getter") {
+        consume(TokenType::LEFT_PAREN, "Expect ( after " + kind + " name");
+
+        if(!check(TokenType::RIGHT_PAREN)) {
+            do {
+                if(parameters.size() >= 255) {
+                    error(peek(), "Can't have more than 255 params");
+                }
+
+                parameters.push_back(consume(TokenType::IDENTIFIER, "Parameter needed"));
+            } while(match(std::vector<TokenType>{TokenType::COMMA}));
+        }
+
+        consume(TokenType::RIGHT_PAREN, "Expect ) after params list");
+    }
 
     consume(TokenType::LEFT_BRACE, "Expect { before " + kind + " body");
     Block *body = static_cast<Block *>(block());

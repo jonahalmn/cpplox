@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
         "WhileStmt : Expression *m_condition, Statement *m_body",
         "BreakStmt : Token m_token",
         "Function : Token m_name, std::vector<Token> m_params, Block *m_body",
-        "ClassDecl : Token m_name, std::vector<Function *> m_methods, std::vector<Function *> m_statics",
+        "ClassDecl : Token m_name, std::vector<Function *> m_methods, std::vector<Function *> m_statics, std::vector<Function *> m_getters",
         "ReturnStmt: Token m_keyword, Expression *m_value"
     };
 

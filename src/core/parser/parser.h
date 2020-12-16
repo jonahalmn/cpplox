@@ -20,6 +20,7 @@
 #include "./breakstmt.h"
 #include "./call.h"
 #include "../error/parseError.h"
+#include "../error/getterException.h"
 #include "../errorReporter.h"
 #include "./function.h"
 #include "./returnstmt.h"

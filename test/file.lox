@@ -5,7 +5,20 @@ class Cake {
 
   taste() {
     var adjective = "delicious";
+    this.flavor = "Faveur";
     print "The " + this.flavor + " cake is " + adjective + "!";
+  }
+}
+
+class Rect {
+
+  init(size) {
+    this.height = size;
+    this.width = size;
+  }
+
+  area {
+    return this.width * this.height;
   }
 }
 
@@ -14,9 +27,12 @@ class Math {
     return a * a;
   }
 }
+var rectangle = Rect(3);
+print rectangle.area;
 
 print Math.Pow(3);
 
 var cake = Cake();
 cake.flavor = "German chocolate";
 cake.taste(); // Prints "The German chocolate cake is delicious!".
+

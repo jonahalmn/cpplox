@@ -10,15 +10,16 @@ std::any LoxFunction::call(Evaluator *evaluator, std::vector<std::any> arguments
 
     try {
         evaluator->executeBlock(m_declaration->m_body, new Environment{env});
-        // ancestor(1), because function declare two scopes
+        // evaluator->m_environment = evaluator->m_environment->ancestor(1);
+    } catch (ReturnExeption *e) {
+        // ancestor(2), because function declare two scopes
         // one for the function itself, and one for the block body
         // since it's not desirable, it's ok for demontration purpose.
-        evaluator->m_environment = evaluator->m_environment->ancestor(1);
-    } catch (ReturnExeption *e) {
-        evaluator->m_environment = evaluator->m_environment->ancestor(1);
+        evaluator->m_environment = evaluator->m_environment->ancestor(2);
         return e->m_value;
     }
 
+    // 'this' is defined one scope above beacause of issue mentionned above.
     if(m_is_initializer) return m_closure->get_at(0, "this");
     return nullptr;
 }

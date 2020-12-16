@@ -19,7 +19,7 @@ class LoxInstance {
         LoxInstance(LoxClass *klass) : m_klass{klass} {};
         LoxInstance() {};
 
-        virtual std::any get(Token name);
+        virtual std::any get(Token name, Evaluator*);
         virtual std::any set(Token name, std::any value);
         LoxFunction *bind(LoxInstance *);
 };

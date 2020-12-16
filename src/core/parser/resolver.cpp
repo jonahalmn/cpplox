@@ -35,6 +35,11 @@ std::any Resolver::visit(ClassDecl *classdecl) {
         resolveFunction(stat, declaration);
     }
 
+    for (Function *the_getter : classdecl->m_getters) {
+        FunctionType declaration = FunctionType::GETTER;
+        resolveFunction(the_getter, declaration);
+    }
+
     endScope(classdecl->m_name.m_line);
 
     m_current_class = enclosing_class;
