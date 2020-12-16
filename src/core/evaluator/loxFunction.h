@@ -13,9 +13,10 @@ class LoxFunction : public LoxCallable {
     private:
         Function *m_declaration;
         Environment *m_closure;
+        bool m_is_initializer = false;
 
     public:
-        LoxFunction(Function *declaration, Environment *closure) : m_declaration{declaration}, m_closure{closure} {};
+        LoxFunction(Function *declaration, Environment *closure, bool is_initializer) : m_declaration{declaration}, m_closure{closure}, m_is_initializer{is_initializer} {};
         virtual unsigned int arity();
         virtual std::any call(Evaluator *evaluator, std::vector<std::any> arguments);
         virtual LoxFunction *bind(LoxInstance *);

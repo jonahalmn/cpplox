@@ -1,5 +1,6 @@
 #include "./loxInstance.h"
 #include "./loxFunction.h"
+#include "./loxClass.h"
 
 std::any LoxInstance::get(Token name) {
     if(m_fields.find(name) != m_fields.end())

@@ -42,6 +42,8 @@
 #include "./loxFunction.h"
 #include "./clock.h"
 #include "./returnExeption.h"
+#include "../error/nonStaticError.h"
+#include "../error/forbiddenStaticSet.h"
 
 #ifndef EVAL_H
 #define EVAL_H

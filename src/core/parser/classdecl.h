@@ -12,7 +12,8 @@ class ClassDecl : public Statement {
 public:
  Token m_name;
  std::vector<Function *> m_methods;
-ClassDecl( Token m_name, std::vector<Function *> m_methods) : m_name{m_name},m_methods{m_methods}{}
+ std::vector<Function *> m_statics;
+ClassDecl( Token m_name, std::vector<Function *> m_methods, std::vector<Function *> m_statics) : m_name{m_name},m_methods{m_methods},m_statics{m_statics}{}
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };

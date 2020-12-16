@@ -49,11 +49,19 @@ std::any Evaluator::visit(ReturnStmt *returnStmt) {
 
 std::any Evaluator::visit(Get *get) {
     std::any object = evaluate(get->m_object);
+
     try {
-        LoxInstance* instance = std::any_cast<LoxInstance *>(object);
-        return instance->get(get->m_name);
+        if(object.type() == typeid(LoxCallable *)) {
+            LoxClass* instance = (LoxClass *) std::any_cast<LoxCallable *>(object);
+            return instance->get(get->m_name);
+        } else {
+            LoxInstance* instance = std::any_cast<LoxInstance *>(object);
+            return instance->get(get->m_name);
+        }
     } catch(std::bad_any_cast e) {
         m_error_reporter->error(RuntimeError{get->m_name, "trying to access property of non-object"});
+    } catch( NonStaticError e ) {
+        m_error_reporter->error(RuntimeError{get->m_name, "trying to access non-static property"});
     }
 
     return nullptr;
@@ -67,6 +75,8 @@ std::any Evaluator::visit(Set *set) {
         object_instance = std::any_cast<LoxInstance *>(object);
     } catch(std::bad_any_cast e) {
         throw RuntimeError{set->m_name, "trying to access field of no-object"};
+    } catch(ForbiddenStaticSet e) {
+        throw RuntimeError{set->m_name, "trying to set static field"};
     }
 
     std::any value = evaluate(set->m_value);
@@ -180,14 +190,21 @@ std::any Evaluator::visit(ClassDecl *classdecl) {
     m_environment->define(classdecl->m_name, nullptr);
 
     std::map<std::string, LoxCallable *> methods {};
+    std::map<std::string, LoxCallable *> statics {};
 
     for (Function *method : classdecl->m_methods)
     {
-        LoxCallable *function = new LoxFunction{method, m_environment};
+        LoxCallable *function = new LoxFunction{method, m_environment, method->m_name.m_lexeme == "init"};
         methods[method->m_name.m_lexeme] = function;
     }
 
-    LoxCallable *klass = new LoxClass{classdecl->m_name, methods};
+    for (Function *stat : classdecl->m_statics)
+    {
+        LoxCallable *function = new LoxFunction{stat, m_environment, false};
+        statics[stat->m_name.m_lexeme] = function;
+    }
+
+    LoxCallable *klass = new LoxClass{classdecl->m_name, methods, statics};
     m_environment->assign(classdecl->m_name, klass);
 
     return nullptr;
@@ -274,7 +291,7 @@ std::any Evaluator::visit(Call *call) {
 }
 
 std::any Evaluator::visit(Function *func) {
-    LoxCallable *function = new LoxFunction{func, m_environment};
+    LoxCallable *function = new LoxFunction{func, m_environment, false};
     m_environment->define(func->m_name, function);
     return nullptr;
 }

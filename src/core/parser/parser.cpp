@@ -31,15 +31,20 @@ Statement *Parser::classDeclaration() {
     consume(TokenType::LEFT_BRACE, "need { after class declaration");
 
     std::vector<Function *> methods{};
+    std::vector<Function *> statics{};
 
     while (!check(TokenType::RIGHT_BRACE) && !is_at_end())
     {
-        methods.push_back(static_cast<Function *>(function("method")));
+        if(match(std::vector<TokenType>{TokenType::CLASS})) {
+            statics.push_back(static_cast<Function *>(function("static method")));
+        } else {
+            methods.push_back(static_cast<Function *>(function("method")));
+        }
     }
 
     consume(TokenType::RIGHT_BRACE, "expect } at end of class");
 
-    return new ClassDecl{name, methods};
+    return new ClassDecl{name, methods, statics};
 }
 
 Statement *Parser::varDeclaration() {

@@ -1,9 +1,21 @@
 class Cake {
+  init() {
+    print "baking";
+  }
+
   taste() {
     var adjective = "delicious";
     print "The " + this.flavor + " cake is " + adjective + "!";
   }
 }
+
+class Math {
+  class Pow(a) {
+    return a * a;
+  }
+}
+
+print Math.Pow(3);
 
 var cake = Cake();
 cake.flavor = "German chocolate";

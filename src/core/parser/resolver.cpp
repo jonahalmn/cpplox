@@ -14,6 +14,9 @@ std::any Resolver::visit(Block *block) {
 }
 
 std::any Resolver::visit(ClassDecl *classdecl) {
+    ClassType enclosing_class = m_current_class;
+    m_current_class = ClassType::CLASS;
+
     declare(classdecl->m_name);
     define(classdecl->m_name);
 
@@ -23,11 +26,18 @@ std::any Resolver::visit(ClassDecl *classdecl) {
     for (Function *func : classdecl->m_methods)
     {
         FunctionType declaration = FunctionType::METHOD;
+        if (func->m_name.m_lexeme == "init") declaration = FunctionType::INITIALIZER;
         resolveFunction(func, declaration);
+    }
+
+    for (Function *stat : classdecl->m_statics) {
+        FunctionType declaration = FunctionType::STATIC;
+        resolveFunction(stat, declaration);
     }
 
     endScope(classdecl->m_name.m_line);
 
+    m_current_class = enclosing_class;
     return nullptr;
 }
 
@@ -52,6 +62,8 @@ std::any Resolver::visit(Set *set) {
 }
 
 std::any Resolver::visit(ThisExpr *thisExpr) {
+    if(m_current_class == ClassType::NONE)
+        m_error_reporter->error(thisExpr->m_keyword, "Can't use 'this' outside class");
     resolveLocal(thisExpr, thisExpr->m_keyword);
     return nullptr;
 }
@@ -100,6 +112,10 @@ std::any Resolver::visit(IfStmt *stmt) {
 std::any Resolver::visit(ReturnStmt *stmt) {
     if(m_current_function == FunctionType::NONE) {
         m_error_reporter->error(stmt->m_keyword, "Can't return outside a function.");
+    }
+
+    if(m_current_function == FunctionType::INITIALIZER) {
+        m_error_reporter->error(stmt->m_keyword, "Can't return in constructor.");
     }
 
     if(stmt->m_value) {

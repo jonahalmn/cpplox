@@ -2,7 +2,6 @@
 #include<iostream>
 #include "../parser/function.h"
 #include "./loxCallable.h"
-#include "./loxClass.h"
 #include "./returnExeption.h"
 #include "../error/runtimeError.h"
 #include <vector>
@@ -18,9 +17,10 @@ class LoxInstance {
         std::map<Token, std::any> m_fields{};
 
         LoxInstance(LoxClass *klass) : m_klass{klass} {};
+        LoxInstance() {};
 
-        std::any get(Token name);
-        std::any set(Token name, std::any value);
+        virtual std::any get(Token name);
+        virtual std::any set(Token name, std::any value);
         LoxFunction *bind(LoxInstance *);
 };
 

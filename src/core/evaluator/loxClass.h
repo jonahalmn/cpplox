@@ -2,7 +2,9 @@
 #include<iostream>
 #include "../parser/function.h"
 #include "./loxCallable.h"
+#include "./loxInstance.h"
 #include "./returnExeption.h"
+#include "../error/nonStaticError.h"
 #include <vector>
 #include <any>
 #include <map>
@@ -10,16 +12,25 @@
 #ifndef LOXCLASS_H
 #define LOXCLASS_H
 
-class LoxClass : public LoxCallable {
+class LoxClass : public LoxCallable, public LoxInstance {
     public:
 
         Token m_name;
         std::map<std::string, LoxCallable *> m_methods;
-        LoxClass(Token name, std::map<std::string, LoxCallable *> methods) : m_name{name}, m_methods{methods} {}
+        std::map<std::string, LoxCallable *> m_statics;
+
+        LoxClass(
+            Token name,
+            std::map<std::string, LoxCallable *> methods,
+            std::map<std::string, LoxCallable *> statics
+        ) : m_name{name}, m_methods{methods}, m_statics{statics} {}
 
         virtual std::any call(Evaluator *evaluator, std::vector<std::any> args);
         virtual unsigned int arity();
+        virtual std::any get(Token name);
+        // virtual std::any set(Token name, std::any value);
         LoxCallable *findMethod(std::string);
+        LoxCallable *findStatic(std::string);
 };
 
 #endif

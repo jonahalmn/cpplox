@@ -5,6 +5,7 @@
 #include "../evaluator/evaluator.h"
 #include "../errorReporter.h"
 #include "../../inc/function_type.h"
+#include "../../inc/class_type.h"
 
 
 class Resolver : public Visitor {
@@ -13,7 +14,8 @@ class Resolver : public Visitor {
         ErrorReporter *m_error_reporter = ErrorReporter::getInstance();
 
         std::vector<std::map<std::string, std::pair<bool, bool>>> m_scopes{};
-        FunctionType m_current_function = NONE;
+        FunctionType m_current_function = FunctionType::NONE;
+        ClassType m_current_class = ClassType::NONE;
 
         void beginScope();
         void endScope(int line);
