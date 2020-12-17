@@ -3,7 +3,8 @@
 
 enum class ClassType {
     NONE,
-    CLASS
+    CLASS,
+    SUBCLASS
 };
 
 #endif

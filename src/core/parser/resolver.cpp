@@ -26,6 +26,7 @@ std::any Resolver::visit(ClassDecl *classdecl) {
     }
 
     if(classdecl->m_superclass) {
+        m_current_class = ClassType::SUBCLASS;
         resolve(classdecl->m_superclass);
     }
 
@@ -63,6 +64,12 @@ std::any Resolver::visit(ClassDecl *classdecl) {
 }
 
 std::any Resolver::visit(SuperExpr *super) {
+    if(m_current_class == ClassType::NONE) {
+        m_error_reporter->error(super->m_keyword, "can't use 'super' outside class");
+    } else if(m_current_class != ClassType::SUBCLASS) {
+        m_error_reporter->error(super->m_keyword, "'super' is not available in this class");
+    }
+
     resolveLocal(super, super->m_keyword);
     return nullptr;
 }
