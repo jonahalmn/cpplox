@@ -24,6 +24,10 @@ LoxCallable *LoxClass::findMethod(std::string name) {
     if(m_methods.find(name) != m_methods.end())
         return m_methods.at(name);
 
+    if(m_superclass) {
+        return m_superclass->findMethod(name);
+    }
+
     return nullptr;
 }
 
@@ -31,12 +35,20 @@ LoxCallable *LoxClass::findGetter(std::string name) {
     if(m_getters.find(name) != m_getters.end())
         return m_getters.at(name);
 
+    if(m_superclass) {
+        return m_superclass->findGetter(name);
+    }
+
     return nullptr;
 }
 
 LoxCallable *LoxClass::findStatic(std::string name) {
     if(m_statics.find(name) != m_statics.end())
         return m_statics.at(name);
+
+    if(m_superclass) {
+        return m_superclass->findGetter(name);
+    }
 
     throw NonStaticError();
     return nullptr;

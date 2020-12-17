@@ -9,9 +9,9 @@
 
 class Environment {
     std::map<std::string, std::any> m_list{};
-    Environment* m_enclosing = nullptr;
 
     public:
+        Environment* m_enclosing = nullptr;
         Environment() {};
         Environment(Environment* enclosing) : m_enclosing{enclosing} {};
 

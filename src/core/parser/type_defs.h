@@ -15,6 +15,7 @@ class Call;
 class Get;
 class Set;
 class ThisExpr;
+class SuperExpr;
 class StmtExpression;
 class Print;
 class Var;

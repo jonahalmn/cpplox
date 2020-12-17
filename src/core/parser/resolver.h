@@ -54,6 +54,7 @@ class Resolver : public Visitor {
         virtual std::any visit(Function *function);
         virtual std::any visit(ReturnStmt *returnstmt);
         virtual std::any visit(ClassDecl *classdecl);
+        virtual std::any visit(SuperExpr *super);
 
 
         Resolver(Evaluator *evaluator) : m_evaluator{evaluator} {}

@@ -20,6 +20,20 @@ std::any Resolver::visit(ClassDecl *classdecl) {
     declare(classdecl->m_name);
     define(classdecl->m_name);
 
+    if (classdecl->m_superclass &&
+    classdecl->m_name.m_lexeme == classdecl->m_superclass->m_name.m_lexeme) {
+        m_error_reporter->error(classdecl->m_name, "You can't make your class inherhit itself");
+    }
+
+    if(classdecl->m_superclass) {
+        resolve(classdecl->m_superclass);
+    }
+
+    if(classdecl->m_superclass) {
+        beginScope();
+        m_scopes.back()["super"] = std::pair<bool, bool>{true, true};
+    }
+
     beginScope();
     m_scopes.back()["this"] = std::pair<bool, bool>{true, true};
 
@@ -42,7 +56,14 @@ std::any Resolver::visit(ClassDecl *classdecl) {
 
     endScope(classdecl->m_name.m_line);
 
+    if(classdecl->m_superclass) endScope(classdecl->m_name.m_line);
+
     m_current_class = enclosing_class;
+    return nullptr;
+}
+
+std::any Resolver::visit(SuperExpr *super) {
+    resolveLocal(super, super->m_keyword);
     return nullptr;
 }
 

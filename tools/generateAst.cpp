@@ -25,7 +25,8 @@ int main(int argc, char* argv[]) {
         "Call : Expression *m_callee, Token m_parenthesis, std::vector<Expression *> m_arguments",
         "Get : Expression *m_object, Token m_name",
         "Set : Expression *m_object, Token m_name, Expression *m_value",
-        "ThisExpr : Token m_keyword"
+        "ThisExpr : Token m_keyword",
+        "SuperExpr : Token m_keyword, Token m_method"
     };
 
     std::vector<std::string> types_s{
@@ -37,7 +38,7 @@ int main(int argc, char* argv[]) {
         "WhileStmt : Expression *m_condition, Statement *m_body",
         "BreakStmt : Token m_token",
         "Function : Token m_name, std::vector<Token> m_params, Block *m_body",
-        "ClassDecl : Token m_name, std::vector<Function *> m_methods, std::vector<Function *> m_statics, std::vector<Function *> m_getters",
+        "ClassDecl : Token m_name, Variable *m_superclass, std::vector<Function *> m_methods, std::vector<Function *> m_statics, std::vector<Function *> m_getters",
         "ReturnStmt: Token m_keyword, Expression *m_value"
     };
 

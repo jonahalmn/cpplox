@@ -187,7 +187,32 @@ std::any Evaluator::visit(Var *var) {
 }
 
 std::any Evaluator::visit(ClassDecl *classdecl) {
+    std::any superclass = nullptr;
+    LoxClass *superclass_class = nullptr;
+
+    if(classdecl->m_superclass) {
+        superclass = evaluate(classdecl->m_superclass);
+        if(typeid(LoxCallable *) != superclass.type()){
+            throw RuntimeError(classdecl->m_name, "superclass is not a class");
+        }
+
+        LoxCallable *superclass_callable = std::any_cast<LoxCallable *>(superclass);
+        superclass_class = dynamic_cast<LoxClass *>(superclass_callable);
+
+        if(!superclass_class) {
+            throw RuntimeError(classdecl->m_name, "superclass is not a class");
+        }
+    }
+
     m_environment->define(classdecl->m_name, nullptr);
+
+    if(classdecl->m_superclass) {
+        m_environment = new Environment{m_environment};
+        m_environment->define(
+            Token{TokenType::SUPER, "super", classdecl->m_name.m_line},
+            superclass_class
+        );
+    }
 
     std::map<std::string, LoxCallable *> methods {};
     std::map<std::string, LoxCallable *> statics {};
@@ -211,10 +236,36 @@ std::any Evaluator::visit(ClassDecl *classdecl) {
         getters[get->m_name.m_lexeme] = function;
     }
 
-    LoxCallable *klass = new LoxClass{classdecl->m_name, methods, statics, getters};
+    LoxCallable *klass = new LoxClass{
+        classdecl->m_name,
+        superclass_class,
+        methods,
+        statics,
+        getters
+    };
+
+    if(classdecl->m_superclass) {
+        m_environment = m_environment->m_enclosing;
+    }
+
     m_environment->assign(classdecl->m_name, klass);
 
     return nullptr;
+}
+
+std::any Evaluator::visit(SuperExpr *superExpr) {
+    int distance = m_locals.at(superExpr);
+    LoxClass *superclass = std::any_cast<LoxClass *>(m_environment->get_at(distance, "super"));
+
+    LoxInstance *object = std::any_cast<LoxInstance *>(m_environment->get_at(distance - 1, "this"));
+
+    LoxFunction *method = (LoxFunction *) superclass->findMethod(superExpr->m_method.m_lexeme);
+
+    if(!method) {
+        throw RuntimeError{superExpr->m_keyword, "trying to access to undefined property"};
+    }
+
+    return (LoxCallable *) method->bind(object);
 }
 
 std::any Evaluator::visit(ThisExpr *thisExpr) {

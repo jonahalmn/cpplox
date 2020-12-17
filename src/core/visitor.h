@@ -16,6 +16,7 @@ virtual std::any visit(Call *call) = 0;
 virtual std::any visit(Get *get) = 0;
 virtual std::any visit(Set *set) = 0;
 virtual std::any visit(ThisExpr *thisexpr) = 0;
+virtual std::any visit(SuperExpr *superexpr) = 0;
 virtual std::any visit(StmtExpression *stmtexpression) = 0;
 virtual std::any visit(Print *print) = 0;
 virtual std::any visit(Var *var) = 0;

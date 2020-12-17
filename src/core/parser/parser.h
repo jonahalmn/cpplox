@@ -19,6 +19,7 @@
 #include "./logical.h"
 #include "./breakstmt.h"
 #include "./call.h"
+#include "./superexpr.h"
 #include "../error/parseError.h"
 #include "../error/getterException.h"
 #include "../errorReporter.h"

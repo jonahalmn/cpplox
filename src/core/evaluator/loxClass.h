@@ -16,16 +16,18 @@ class LoxClass : public LoxCallable, public LoxInstance {
     public:
 
         Token m_name;
+        LoxClass *m_superclass;
         std::map<std::string, LoxCallable *> m_methods;
         std::map<std::string, LoxCallable *> m_statics;
         std::map<std::string, LoxCallable *> m_getters;
 
         LoxClass(
             Token name,
+            LoxClass *superclass,
             std::map<std::string, LoxCallable *> methods,
             std::map<std::string, LoxCallable *> statics,
             std::map<std::string, LoxCallable *> getters
-        ) : m_name{name}, m_methods{methods}, m_statics{statics}, m_getters{getters} {}
+        ) : m_name{name}, m_superclass{superclass}, m_methods{methods}, m_statics{statics}, m_getters{getters} {}
 
         virtual std::any call(Evaluator *evaluator, std::vector<std::any> args);
         virtual unsigned int arity();

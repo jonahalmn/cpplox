@@ -28,6 +28,13 @@ Statement *Parser::declaration() {
 
 Statement *Parser::classDeclaration() {
     Token name = consume(TokenType::IDENTIFIER, "need class identifier");
+
+    Variable *superclass = nullptr;
+    if(match(std::vector<TokenType>{TokenType::LESS})) {
+        consume(TokenType::IDENTIFIER, "need superclass identifier");
+        superclass = new Variable{previous()};
+    }
+
     consume(TokenType::LEFT_BRACE, "need { after class declaration");
 
     std::vector<Function *> methods{};
@@ -49,7 +56,7 @@ Statement *Parser::classDeclaration() {
 
     consume(TokenType::RIGHT_BRACE, "expect } at end of class");
 
-    return new ClassDecl{name, methods, statics, getters};
+    return new ClassDecl{name, superclass, methods, statics, getters};
 }
 
 Statement *Parser::varDeclaration() {
@@ -497,6 +504,13 @@ Expression* Parser::primary() {
 
     if(match(std::vector<TokenType>{TokenType::THIS})) {
         return new ThisExpr{previous()};
+    }
+
+    if(match(std::vector<TokenType>{TokenType::SUPER})) {
+        Token keyword = previous();
+        consume(TokenType::DOT, "'.' needed after super keyword");
+        Token method = consume(TokenType::IDENTIFIER, "expect class method name");
+        return new SuperExpr{keyword, method};
     }
 
     throw error(peek(), "Expect expression.");

@@ -32,6 +32,7 @@
 #include "../parser/get.h"
 #include "../parser/set.h"
 #include "../parser/thisexpr.h"
+#include "../parser/superexpr.h"
 #include "./loxFunction.h"
 
 
@@ -103,6 +104,7 @@ class Evaluator : public Visitor {
         virtual std::any visit(ClassDecl *classdecl);
 
         virtual std::any visit(ThisExpr *thisExpr);
+        virtual std::any visit(SuperExpr *superExpr);
 
         virtual std::any visit(Get *get);
         virtual std::any visit(Set *set);

@@ -27,7 +27,26 @@ class Math {
     return a * a;
   }
 }
+
+class Parent {
+  sayHello() {
+    print "hello world";
+  }
+}
+
+class Child < Parent {
+  sayHello() {
+    super.sayHello();
+    print "hello child";
+  }
+}
+
+Child().sayHello();
+
 var rectangle = Rect(3);
+
+
+
 print rectangle.area;
 
 print Math.Pow(3);

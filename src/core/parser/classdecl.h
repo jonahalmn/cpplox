@@ -11,10 +11,11 @@
 class ClassDecl : public Statement {
 public:
  Token m_name;
+ Variable *m_superclass;
  std::vector<Function *> m_methods;
  std::vector<Function *> m_statics;
  std::vector<Function *> m_getters;
-ClassDecl( Token m_name, std::vector<Function *> m_methods, std::vector<Function *> m_statics, std::vector<Function *> m_getters) : m_name{m_name},m_methods{m_methods},m_statics{m_statics},m_getters{m_getters}{}
+ClassDecl( Token m_name, Variable *m_superclass, std::vector<Function *> m_methods, std::vector<Function *> m_statics, std::vector<Function *> m_getters) : m_name{m_name},m_superclass{m_superclass},m_methods{m_methods},m_statics{m_statics},m_getters{m_getters}{}
 virtual std::any accept(Visitor *visitor){
 return visitor->visit(this);
 };
