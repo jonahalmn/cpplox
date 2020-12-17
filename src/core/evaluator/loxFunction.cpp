@@ -3,6 +3,7 @@
 
 std::any LoxFunction::call(Evaluator *evaluator, std::vector<std::any> arguments) {
     Environment *env = new Environment{m_closure};
+    Environment *prev = evaluator->m_environment;
     for (unsigned int i = 0; i < m_declaration->m_params.size() ; i++)
     {
         env->define(m_declaration->m_params[i], arguments[i]);
@@ -10,12 +11,9 @@ std::any LoxFunction::call(Evaluator *evaluator, std::vector<std::any> arguments
 
     try {
         evaluator->executeBlock(m_declaration->m_body, new Environment{env});
-        // evaluator->m_environment = evaluator->m_environment->ancestor(1);
     } catch (ReturnExeption *e) {
-        // ancestor(2), because function declare two scopes
-        // one for the function itself, and one for the block body
-        // since it's not desirable, it's ok for demontration purpose.
-        evaluator->m_environment = evaluator->m_environment->ancestor(2);
+        // restore to previous env before block
+        evaluator->m_environment = prev;
         return e->m_value;
     }
 

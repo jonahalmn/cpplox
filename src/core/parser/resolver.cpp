@@ -8,7 +8,7 @@ void Resolver::resolve(std::vector<Statement *> statements) {
 
 std::any Resolver::visit(Block *block) {
     beginScope();
-    resolve(*block->m_statements);
+    resolve(*(block->m_statements));
     endScope(0);
     return nullptr;
 }

@@ -10,7 +10,10 @@ std::any LoxInstance::get(Token name, Evaluator *evaluator) {
     if(method) return (LoxCallable *) method->bind(this);
 
     method = (LoxFunction *) m_klass->findGetter(name.m_lexeme);
-    if(method) return method->bind(this)->call(evaluator, std::vector<std::any>{});
+    if(method) {
+        std::any object = method->bind(this)->call(evaluator, std::vector<std::any>{});
+        return object;
+    }
 
     throw RuntimeError{name, std::string{"undefined property " + name.m_lexeme}.c_str()};
 }
